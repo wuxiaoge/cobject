@@ -1,12 +1,15 @@
 #include "object.h"
 
 static int int_init(Object *self, Object *args) {
+    Object_Extend(self, &Object_Type, sizeof(Object));
+    Object_Init(Object_BASE(self), Object_NULL); 
     int _i = *(int *)args;
     IntObject_VALUE(self) = _i;
     return 0;
 }
 
 static int int_deinit(Object *self) {
+    printf("int deinit ...\n");
     return 0;
 }
 
@@ -22,7 +25,7 @@ static Object *int_str(Object *self) {
 
 TypeObject Int_Type = {
     int_init,
-    int_deinit,
+/*    int_deinit */ 0,
     int_hash,
     int_str
 };
