@@ -20,7 +20,6 @@ static Object *str_str(Object *self) {
 }
 
 TypeObject Str_Type = {
-    Object_HEAD_INIT
     str_init,
     str_deinit,
     str_hash,

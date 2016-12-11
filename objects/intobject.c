@@ -21,7 +21,6 @@ static Object *int_str(Object *self) {
 }
 
 TypeObject Int_Type = {
-    Object_HEAD_INIT
     int_init,
     int_deinit,
     int_hash,

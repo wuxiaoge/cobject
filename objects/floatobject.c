@@ -21,7 +21,6 @@ static Object *float_str(Object *self) {
 }
 
 TypeObject Float_Type = {
-    Object_HEAD_INIT
     float_init,
     float_deinit,
     float_hash,

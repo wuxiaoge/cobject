@@ -21,7 +21,6 @@ static Object *long_str(Object *self) {
 }
 
 TypeObject Long_Type = {
-    Object_HEAD_INIT
     long_init,
     long_deinit,
     long_hash,

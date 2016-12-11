@@ -11,7 +11,8 @@ extern "C" {
 
 #define Object_HEAD \
     size_t ob_refcnt; \
-    struct _typeobject *ob_type;
+    struct _typeobject *ob_type; \
+    struct _object *ob_base;
 
 #define Object_VAR_HEAD \
     Object_HEAD \
@@ -31,7 +32,6 @@ typedef long (*hashfunc)(Object *);
 typedef Object *(*strfunc)(Object *);
 
 typedef struct _typeobject {
-    Object_HEAD
     initfunc tp_init;
     deinitfunc tp_deinit;
     hashfunc tp_hash;
@@ -57,26 +57,18 @@ extern TypeObject Object_Type;
 
 #define Object_CONVERT(ob) ((Object *)(ob))
 #define Object_NULL ((void *)0)
-#define Object_HEAD_EXTEND(type) 1, type,
-#define Object_HEAD_INIT Object_HEAD_EXTEND(&Object_Type)
-#define Object_VAR_HEAD_INIT Object_HEAD_INIT 0,
 #define Object_MALLOC(size) Object_CONVERT(malloc((size)))
+#define Object_EXTEND(ob, super) Object_BASE(ob) = super
 #define Object_TYPE(ob) Object_CONVERT(ob)->ob_type
+#define Object_BASE(ob) Object_CONVERT(ob)->ob_base
 #define Object_REFCNT(ob) Object_CONVERT(ob)->ob_refcnt
-#define Object_INCREF(ob) Object_REFCNT(ob)++
-#define Object_DECREF(ob) \
-    do { \
-        Object_REFCNT(ob)--; \
-        if (!Object_REFCNT(ob)) { \
-            Object_Deinit(ob); \
-            free(ob); \
-            ob = Object_NULL; \
-        } \
-    } while(0)
+#define Object_INCREF(ob) Object_IncRef(Object_CONVERT(ob))
+#define Object_DECREF(ob) Object_DecRef(Object_CONVERT(ob))
 
 #define Object_INIT(ob, type) \
     Object_REFCNT(ob) = 1; \
-    Object_TYPE(ob) = (struct _typeobject *)(type)
+    Object_TYPE(ob) = (struct _typeobject *)(type); \
+    Object_BASE(ob) = Object_NULL
 
 #define Object_VAR_CONVERT(ob) ((VarObject *)(ob))
 #define Object_VAR_SIZE(ob) Object_VAR_CONVERT(ob)->ob_size
@@ -87,11 +79,15 @@ long TypeObject_Hash(Object *, TypeObject *);
 Object *TypeObject_Str(Object *, TypeObject *);
 
 Object *Object_Malloc(TypeObject *, size_t);
+int Object_Extend(Object *, TypeObject *, size_t);
 int Object_Init(Object *, Object *);
 int Object_Deinit(Object *);
 long Object_Hash(Object *);
 Object *Object_Str(Object *);
 int Object_Check(Object *, TypeObject *);
+size_t Object_IncRef(Object *);
+size_t Object_DecRef(Object *);
+void Object_Free(Object **);
 
 #ifdef __cplusplus
 }

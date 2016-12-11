@@ -17,6 +17,7 @@ int main(int argc, char *args[]) {
 
     printf("float\n");
     Object *f = FloatObject_FromFloat(1.6f);
+    printf("value : %f\n", FloatObject_AsFLOAT(f));
     Object *fs = Object_Str(f);
     printf(" =====>> %s\n", StrObject_AsSTR(fs));
     Object_DECREF(fs);
@@ -24,6 +25,7 @@ int main(int argc, char *args[]) {
 
     printf("long\n");
     Object *l = LongObject_FromLong(9L);
+    printf("value : %ld\n", LongObject_AsLONG(l));
     Object *ls = Object_Str(l);
     printf(" =====>> %s\n", StrObject_AsSTR(ls));
     Object_DECREF(l);
