@@ -1,6 +1,8 @@
 #include "object.h"
 
 static int str_init(Object *self, Object *args) {
+    Object_Extend(self, &Object_Type, sizeof(Object));
+    Object_Init(Object_BASE(self), Object_NULL);
     const char *_s = (const char *)args;
     memset(StrObject_VALUE(self), 0, StrObject_SIZE(self) + 1);
     memcpy(StrObject_VALUE(self), _s, StrObject_SIZE(self));

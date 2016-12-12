@@ -1,12 +1,15 @@
 #include "object.h"
 
 static int long_init(Object *self, Object *args) {
+    Object_Extend(self, &Object_Type, sizeof(Object));
+    Object_Init(Object_BASE(self), Object_NULL);
     long _l = *(long *)args;
     LongObject_VALUE(self) = _l;
     return 0;
 }
 
 static int long_deinit(Object *self) {
+    printf("long deinit ...\n");
     return 0;
 }
 

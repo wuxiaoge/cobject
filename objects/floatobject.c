@@ -1,6 +1,8 @@
 #include "object.h"
 
 static int float_init(Object *self, Object *args) {
+    Object_Extend(self, &Object_Type, sizeof(Object));
+    Object_Init(Object_BASE(self), Object_NULL);
     float _f = *(float *)args;
     FloatObject_VALUE(self) = _f;
     return 0;

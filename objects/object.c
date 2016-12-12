@@ -1,7 +1,8 @@
 #include "object.h"
 
 static int object_init(Object *self, Object *args) {
-    printf("object init ...\n"); return 0;
+    printf("object init ...\n");
+    return 0;
 }
 
 static int object_deinit(Object *self) {
