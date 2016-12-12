@@ -1,17 +1,18 @@
 #include "object.h"
 
+MethodDef object_methods[] = {
+    {Object_NULL, Object_NULL}
+};
+
 static int object_init(Object *self, Object *args) {
-    printf("object init ...\n");
     return 0;
 }
 
 static int object_deinit(Object *self) {
-    printf("object deinit ...\n");
     return 0;
 }
 
 static long object_hash(Object *self) {
-    printf("object hash ...\n");
     return -1L;
 }
 
@@ -26,7 +27,8 @@ TypeObject Object_Type = {
     .tp_init = object_init,
     .tp_deinit = object_deinit,
     .tp_hash = object_hash,
-    .tp_str = object_str
+    .tp_str = object_str,
+    .tp_methods = object_methods
 };
 
 int TypeObject_Init(Object *self, TypeObject *type, Object *args) {
@@ -114,7 +116,27 @@ Object *Object_Str(Object *self) {
 }
 
 int Object_Check(Object *self, TypeObject *type) {
-    return (Object_TYPE(self) == type) ? 1 : 0;
+    return Object_CHECK(self, type) ? 1 : 0;
+}
+
+methodfunc Object_GetMethod(Object *self, Object *name) {
+    MethodDef *md = Object_TYPE(self)->tp_methods;
+    while(md && md->md_name){
+        if(!strcmp(StrObject_AsSTR(name), md->md_name)) {
+            return md->md_func;
+        }
+        md++;
+    }
+    return Object_BASE(self) ? Object_GetMethod(Object_BASE(self), name) : Object_NULL;
+}
+
+Object *Object_CallMethod(Object *self, const char *name, Object *args) {
+    Object *_s = StrObject_FromStr(name);
+    methodfunc mf = Object_GetMethod(self, _s);
+    if(mf) {
+        return mf(self, args);
+    }
+    return Object_NULL;
 }
 
 size_t Object_IncRef(Object *self) {

@@ -1,5 +1,9 @@
 #include "object.h"
 
+MethodDef str_methods[] = {
+    {Object_NULL, Object_NULL}
+};
+
 static int str_init(Object *self, Object *args) {
     Object_Extend(self, &Object_Type, sizeof(Object));
     Object_Init(Object_BASE(self), Object_NULL);
@@ -26,7 +30,8 @@ TypeObject Str_Type = {
     .tp_init = str_init,
     .tp_deinit = str_deinit,
     .tp_hash = str_hash,
-    .tp_str = str_str
+    .tp_str = str_str,
+    .tp_methods = str_methods 
 };
 
 Object *StrObject_FromStrAndSize(const char *s, size_t size) {

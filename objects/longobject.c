@@ -1,5 +1,9 @@
 #include "object.h"
 
+MethodDef long_methods[] = {
+    {Object_NULL, Object_NULL}
+};
+
 static int long_init(Object *self, Object *args) {
     Object_Extend(self, &Object_Type, sizeof(Object));
     Object_Init(Object_BASE(self), Object_NULL);
@@ -28,7 +32,8 @@ TypeObject Long_Type = {
     .tp_init = long_init,
     .tp_deinit = long_deinit,
     .tp_hash = long_hash,
-    .tp_str = long_str
+    .tp_str = long_str,
+    .tp_methods = long_methods
 };
 
 Object *LongObject_FromLong(long l) {

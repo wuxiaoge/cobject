@@ -1,5 +1,14 @@
 #include "object.h"
 
+static Object *int_method_add(Object *self, Object *ob) {
+    return IntObject_FromInt(IntObject_AsINT(self) + IntObject_AsINT(ob));
+}
+
+MethodDef int_methods[] = {
+    {"Add_Int", int_method_add},
+    {Object_NULL, Object_NULL}
+};
+
 static int int_init(Object *self, Object *args) {
     Object_Extend(self, &Object_Type, sizeof(Object));
     Object_Init(Object_BASE(self), Object_NULL); 
@@ -9,7 +18,6 @@ static int int_init(Object *self, Object *args) {
 }
 
 static int int_deinit(Object *self) {
-    printf("int deinit ...\n");
     return 0;
 }
 
@@ -28,7 +36,8 @@ TypeObject Int_Type = {
     .tp_init = int_init,
     .tp_deinit = int_deinit,
     .tp_hash = int_hash,
-    .tp_str = int_str
+    .tp_str = int_str,
+    .tp_methods = int_methods
 };
 
 Object *IntObject_FromInt(int i) {

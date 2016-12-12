@@ -31,6 +31,17 @@ int main(int argc, char *args[]) {
     Object_DECREF(l);
     Object_DECREF(ls);
 
+    Object *a = IntObject_FromInt(1);
+    printf("int a : %d\n", IntObject_AsINT(a));
+    Object *b = IntObject_FromInt(11);
+    printf("int b : %d\n", IntObject_AsINT(b));
+    Object *c = Object_CallMethod(a, "Add_Int", b);
+    Object_CallMethod(a, "GetTypeName", Object_NULL);
+    printf("int c : %d\n", c ? IntObject_AsINT(c) : 0);
+    Object_DECREF(a);
+    Object_DECREF(b);
+    Object_DECREF(c);
+
     return 0;
 }
 

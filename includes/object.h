@@ -30,6 +30,12 @@ typedef int (*initfunc)(Object *, Object *);
 typedef int (*deinitfunc)(Object *);
 typedef long (*hashfunc)(Object *);
 typedef Object *(*strfunc)(Object *);
+typedef Object *(*methodfunc)(Object *, Object *);
+
+typedef struct _methoddef {
+    const char * md_name;
+    methodfunc md_func;
+} MethodDef;
 
 typedef struct _typeobject {
     const char * tp_name;
@@ -37,6 +43,7 @@ typedef struct _typeobject {
     deinitfunc tp_deinit;
     hashfunc tp_hash;
     strfunc tp_str;
+    struct _methoddef *tp_methods;
 } TypeObject;
 
 extern TypeObject Object_Type;
@@ -66,6 +73,7 @@ extern TypeObject Object_Type;
 #define Object_REFCNT(ob) Object_CONVERT(ob)->ob_refcnt
 #define Object_INCREF(ob) Object_IncRef(Object_CONVERT(ob))
 #define Object_DECREF(ob) Object_DecRef(Object_CONVERT(ob))
+#define Object_CHECK(ob, type) Object_TYPE(ob) == type
 
 #define Object_INIT(ob, type) \
     Object_REFCNT(ob) = 1; \
@@ -87,6 +95,8 @@ int Object_Deinit(Object *);
 long Object_Hash(Object *);
 Object *Object_Str(Object *);
 int Object_Check(Object *, TypeObject *);
+methodfunc Object_GetMethod(Object *, Object *);
+Object *Object_CallMethod(Object *, const char *, Object *);
 size_t Object_IncRef(Object *);
 size_t Object_DecRef(Object *);
 void Object_Free(Object **);

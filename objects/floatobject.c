@@ -1,5 +1,9 @@
 #include "object.h"
 
+MethodDef float_methods[] = {
+    {Object_NULL, Object_NULL}
+};
+
 static int float_init(Object *self, Object *args) {
     Object_Extend(self, &Object_Type, sizeof(Object));
     Object_Init(Object_BASE(self), Object_NULL);
@@ -27,7 +31,8 @@ TypeObject Float_Type = {
     .tp_init = float_init,
     .tp_deinit = float_deinit,
     .tp_hash = float_hash,
-    .tp_str = float_str
+    .tp_str = float_str,
+    .tp_methods = float_methods
 };
 
 Object *FloatObject_FromFloat(float f) {
