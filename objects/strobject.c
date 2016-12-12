@@ -22,10 +22,11 @@ static Object *str_str(Object *self) {
 }
 
 TypeObject Str_Type = {
-    str_init,
-    str_deinit,
-    str_hash,
-    str_str
+    .tp_name = "str",
+    .tp_init = str_init,
+    .tp_deinit = str_deinit,
+    .tp_hash = str_hash,
+    .tp_str = str_str
 };
 
 Object *StrObject_FromStrAndSize(const char *s, size_t size) {

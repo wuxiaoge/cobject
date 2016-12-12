@@ -24,10 +24,11 @@ static Object *long_str(Object *self) {
 }
 
 TypeObject Long_Type = {
-    long_init,
-    long_deinit,
-    long_hash,
-    long_str
+    .tp_name = "long",
+    .tp_init = long_init,
+    .tp_deinit = long_deinit,
+    .tp_hash = long_hash,
+    .tp_str = long_str
 };
 
 Object *LongObject_FromLong(long l) {

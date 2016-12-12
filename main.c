@@ -12,7 +12,7 @@ int main(int argc, char *args[]) {
     printf("str\n");
     Object *s = StrObject_FromStr("hello world !!!");
     printf("lengh : %ld\n", StrObject_SIZE(s));
-    printf("value : %s\n", StrObject_VALUE(s));
+    printf("value : %s Type : %s\n", StrObject_VALUE(s), Object_TYPE_NAME(s));
     Object_DECREF(s);
 
     printf("float\n");
@@ -25,7 +25,7 @@ int main(int argc, char *args[]) {
 
     printf("long\n");
     Object *l = LongObject_FromLong(9L);
-    printf("value : %ld\n", LongObject_AsLONG(l));
+    printf("value : %ld Type Name : %s\n", LongObject_AsLONG(l), Object_TYPE_NAME(l));
     Object *ls = Object_Str(l);
     printf(" =====>> %s\n", StrObject_AsSTR(ls));
     Object_DECREF(l);

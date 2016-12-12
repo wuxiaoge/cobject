@@ -23,10 +23,11 @@ static Object *float_str(Object *self) {
 }
 
 TypeObject Float_Type = {
-    float_init,
-    float_deinit,
-    float_hash,
-    float_str
+    .tp_name = "float",
+    .tp_init = float_init,
+    .tp_deinit = float_deinit,
+    .tp_hash = float_hash,
+    .tp_str = float_str
 };
 
 Object *FloatObject_FromFloat(float f) {

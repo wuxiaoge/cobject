@@ -32,6 +32,7 @@ typedef long (*hashfunc)(Object *);
 typedef Object *(*strfunc)(Object *);
 
 typedef struct _typeobject {
+    const char * tp_name;
     initfunc tp_init;
     deinitfunc tp_deinit;
     hashfunc tp_hash;
@@ -60,6 +61,7 @@ extern TypeObject Object_Type;
 #define Object_MALLOC(size) Object_CONVERT(malloc((size)))
 #define Object_EXTEND(ob, super) Object_BASE(ob) = super
 #define Object_TYPE(ob) Object_CONVERT(ob)->ob_type
+#define Object_TYPE_NAME(ob) Object_TYPE(ob)->tp_name
 #define Object_BASE(ob) Object_CONVERT(ob)->ob_base
 #define Object_REFCNT(ob) Object_CONVERT(ob)->ob_refcnt
 #define Object_INCREF(ob) Object_IncRef(Object_CONVERT(ob))

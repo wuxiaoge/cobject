@@ -22,10 +22,11 @@ static Object *object_str(Object *self) {
 }
 
 TypeObject Object_Type = {
-    object_init,
-    object_deinit,
-    object_hash,
-    object_str
+    .tp_name = "object",
+    .tp_init = object_init,
+    .tp_deinit = object_deinit,
+    .tp_hash = object_hash,
+    .tp_str = object_str
 };
 
 int TypeObject_Init(Object *self, TypeObject *type, Object *args) {

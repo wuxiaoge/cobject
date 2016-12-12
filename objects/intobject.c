@@ -24,10 +24,11 @@ static Object *int_str(Object *self) {
 }
 
 TypeObject Int_Type = {
-    int_init,
-/*    int_deinit */ 0,
-    int_hash,
-    int_str
+    .tp_name = "int",
+    .tp_init = int_init,
+    .tp_deinit = int_deinit,
+    .tp_hash = int_hash,
+    .tp_str = int_str
 };
 
 Object *IntObject_FromInt(int i) {
