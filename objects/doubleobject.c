@@ -56,7 +56,7 @@ static Object *double_method_div(Object *self, Object *ob) {
     return ret;
 }
 
-MethodDef double_methods[] = {
+static MethodDef double_methods[] = {
     {"Add", double_method_add},
     {"Sub", double_method_sub},
     {"Mul", double_method_mul},

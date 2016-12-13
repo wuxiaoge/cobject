@@ -56,7 +56,7 @@ static Object *int_method_div(Object *self, Object *ob) {
     return ret;
 }
 
-MethodDef int_methods[] = {
+static MethodDef int_methods[] = {
     {"Add", int_method_add},
     {"Sub", int_method_sub},
     {"Mul", int_method_mul},

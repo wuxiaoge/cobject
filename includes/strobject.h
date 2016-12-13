@@ -11,6 +11,7 @@ typedef struct _strobject {
 
 extern TypeObject Str_Type;
 
+#define StrObject_CHECK(ob) Object_CHECK(ob, &Str_Type)
 #define StrObject_CONVERT(ob) ((StrObject *)(ob))
 #define StrObject_VALUE(ob) StrObject_CONVERT(ob)->ob_sval
 #define StrObject_SIZE(ob) StrObject_CONVERT(ob)->ob_size

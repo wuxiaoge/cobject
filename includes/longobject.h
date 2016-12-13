@@ -11,6 +11,7 @@ typedef struct _longobject {
 
 extern TypeObject Long_Type;
 
+#define LongObject_CHECK(ob) Object_CHECK(ob, &Long_Type)
 #define LongObject_CONVERT(ob) ((LongObject *)(ob))
 #define LongObject_VALUE(ob) LongObject_CONVERT(ob)->ob_lval
 #define LongObject_AsLONG(ob) LongObject_VALUE(ob)

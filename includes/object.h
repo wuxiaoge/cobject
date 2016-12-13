@@ -73,7 +73,7 @@ extern TypeObject Object_Type;
 #define Object_REFCNT(ob) Object_CONVERT(ob)->ob_refcnt
 #define Object_INCREF(ob) Object_IncRef(Object_CONVERT(ob))
 #define Object_DECREF(ob) Object_DecRef(Object_CONVERT(ob))
-#define Object_CHECK(ob, type) Object_TYPE(ob) == (type)
+#define Object_CHECK(ob, type) (Object_TYPE(ob) == (type))
 
 #define Object_INIT(ob, type) \
     Object_REFCNT(ob) = 1; \

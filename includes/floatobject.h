@@ -11,6 +11,7 @@ typedef struct _floatobject {
 
 extern TypeObject Float_Type;
 
+#define FloatObject_CHECK(ob) Object_CHECK(ob, &Float_Type)
 #define FloatObject_CONVERT(ob) ((FloatObject *)(ob))
 #define FloatObject_VALUE(ob) FloatObject_CONVERT(ob)->ob_fval
 #define FloatObject_AsFLOAT(ob) FloatObject_VALUE(ob)

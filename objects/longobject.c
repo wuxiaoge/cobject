@@ -56,7 +56,7 @@ static Object *long_method_div(Object *self, Object *ob) {
     return ret;
 }
 
-MethodDef long_methods[] = {
+static MethodDef long_methods[] = {
     {"Add", long_method_add},
     {"Sub", long_method_sub},
     {"Mul", long_method_mul},

@@ -1,6 +1,6 @@
 #include "object.h"
 
-MethodDef object_methods[] = {
+static MethodDef object_methods[] = {
     {Object_NULL, Object_NULL}
 };
 

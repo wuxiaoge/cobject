@@ -11,6 +11,7 @@ typedef struct _intobject {
 
 extern TypeObject Int_Type;
 
+#define IntObject_CHECK(ob) Object_CHECK(ob, &Int_Type)
 #define IntObject_CONVERT(ob) ((IntObject *)(ob))
 #define IntObject_VALUE(ob) IntObject_CONVERT(ob)->ob_ival
 #define IntObject_AsINT(ob) IntObject_VALUE(ob)

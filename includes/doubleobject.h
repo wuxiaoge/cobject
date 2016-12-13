@@ -11,6 +11,7 @@ typedef struct _doubleobject {
 
 extern TypeObject Double_Type;
 
+#define DoubleObject_CHECK(ob) Object_CHECK(ob, &Double_Type)
 #define DoubleObject_CONVERT(ob) ((DoubleObject *)(ob))
 #define DoubleObject_VALUE(ob) DoubleObject_CONVERT(ob)->ob_dval
 #define DoubleObject_AsDOUBLE(ob) DoubleObject_VALUE(ob)
