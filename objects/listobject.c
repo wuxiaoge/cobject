@@ -53,7 +53,37 @@ static Object *list_method_remove(Object *self, Object *ob) {
 }
 
 static Object *list_method_slice(Object *self, Object *args) {
-    return Object_NULL;
+    if(!ListObject_CHECK(args)) {
+        return Object_NULL;
+    }
+    Object *ostart = ListObject_GetITEM(args, 0);
+    Object *oend = ListObject_GetITEM(args, 1);
+    int start = IntObject_AsINT(ostart);
+    int end = IntObject_AsINT(oend);
+    size_t lsize = ListObject_SIZE(self);
+    if(!lsize) {
+        return Object_NULL;
+    }
+    if(start < 0) {
+        start = lsize + start;
+    }
+    if(start >= lsize) {
+        return Object_NULL;
+    }
+    if(end < 0) {
+        end = lsize + end;
+    }
+    if(end > lsize) {
+        end = lsize;
+    }
+    if(start < 0 || end < 0 || start > end) {
+        return Object_NULL;
+    }
+    Object *_lst = ListObject_New((int)(end - start));
+    for(int i = start; i < end; i++) {
+        Object_CallMethod(_lst, "Append", ListObject_GetITEM(self, i));
+    }
+    return _lst;
 }
 
 static Object *list_method_get(Object *self, Object *ob) {

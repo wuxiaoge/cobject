@@ -23,8 +23,7 @@ static Object *str_method_substr(Object *self, Object *args) {
     Object *oend = ListObject_GetITEM(args, 1);
     int start = IntObject_AsINT(ostart);
     int end = IntObject_AsINT(oend);
-    printf("%d    %d\n", start, end);
-    size_t ssize = Object_VAR_SIZE(self);
+    size_t ssize = StrObject_SIZE(self);
     if(!ssize) {
         return Object_NULL;
     }
