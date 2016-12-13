@@ -109,6 +109,7 @@ void Object_Free(Object **);
 #include "intobject.h"
 #include "longobject.h"
 #include "floatobject.h"
+#include "doubleobject.h"
 #include "strobject.h"
 
 

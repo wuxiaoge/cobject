@@ -1,46 +1,41 @@
 #include "includes/object.h"
 
 int main(int argc, char *args[]) {
-    printf("int\n");
-    Object *i = IntObject_FromInt(10);
-    printf("int : %d\n", IntObject_AsINT(i));
-    Object *is = Object_Str(i);
-    printf(" =====>> %s\n", StrObject_AsSTR(is));
-    Object_DECREF(is);
-    Object_DECREF(i);
+    Object *a = LongObject_FromLong(2L);
+    Object *as = Object_Str(a);
+    printf("%s a : %s\n", Object_TYPE_NAME(a), StrObject_AsSTR(as));
+    Object_REFCNT(as);
 
-    printf("str\n");
-    Object *s = StrObject_FromStr("hello world !!!");
-    printf("lengh : %ld\n", StrObject_SIZE(s));
-    printf("value : %s Type : %s\n", StrObject_VALUE(s), Object_TYPE_NAME(s));
-    Object_DECREF(s);
+    Object *b = DoubleObject_FromDouble(11.11);
+    Object *bs = Object_Str(b);
+    printf("%s b : %s\n", Object_TYPE_NAME(b), StrObject_AsSTR(bs));
+    Object_DECREF(bs);
 
-    printf("float\n");
-    Object *f = FloatObject_FromFloat(1.6f);
-    printf("value : %f\n", FloatObject_AsFLOAT(f));
+    Object *c = Object_CallMethod(a, "Add", b);
+    Object *cs = Object_Str(c);
+    printf("%s c : %s\n", Object_TYPE_NAME(c), cs ? StrObject_AsSTR(cs) : "0");
+    Object_DECREF(cs);
+
+    Object *d = Object_CallMethod(c, "Div", b);
+    Object *ds = Object_Str(d);
+    printf("%s d : %s\n", Object_TYPE_NAME(d), ds ? StrObject_AsSTR(ds) : "0");
+    Object_DECREF(ds);
+
+    Object *e = Object_CallMethod(d, "Mul", b);
+    Object *es = Object_Str(e);
+    printf("%s e : %s\n", Object_TYPE_NAME(e), es ? StrObject_AsSTR(es) : "0");
+    Object_DECREF(es);
+
+    Object *f = Object_CallMethod(a, "Sub", e);
     Object *fs = Object_Str(f);
-    printf(" =====>> %s\n", StrObject_AsSTR(fs));
+    printf("%s f : %s\n", Object_TYPE_NAME(f), fs ? StrObject_AsSTR(fs) : "0");
     Object_DECREF(fs);
-    Object_DECREF(f);
 
-    printf("long\n");
-    Object *l = LongObject_FromLong(9L);
-    printf("value : %ld Type Name : %s\n", LongObject_AsLONG(l), Object_TYPE_NAME(l));
-    Object *ls = Object_Str(l);
-    printf(" =====>> %s\n", StrObject_AsSTR(ls));
-    Object_DECREF(l);
-    Object_DECREF(ls);
-
-    Object *a = IntObject_FromInt(1);
-    printf("int a : %d\n", IntObject_AsINT(a));
-    Object *b = IntObject_FromInt(11);
-    printf("int b : %d\n", IntObject_AsINT(b));
-    Object *c = Object_CallMethod(a, "Add_Int", b);
-    Object_CallMethod(a, "GetTypeName", Object_NULL);
-    printf("int c : %d\n", c ? IntObject_AsINT(c) : 0);
     Object_DECREF(a);
     Object_DECREF(b);
     Object_DECREF(c);
+    Object_DECREF(e);
+    Object_DECREF(f);
 
     return 0;
 }

@@ -9,6 +9,8 @@ typedef struct _intobject {
     int ob_ival;
 } IntObject;
 
+extern TypeObject Int_Type;
+
 #define IntObject_CONVERT(ob) ((IntObject *)(ob))
 #define IntObject_VALUE(ob) IntObject_CONVERT(ob)->ob_ival
 #define IntObject_AsINT(ob) IntObject_VALUE(ob)

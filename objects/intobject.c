@@ -1,11 +1,66 @@
 #include "object.h"
 
 static Object *int_method_add(Object *self, Object *ob) {
-    return IntObject_FromInt(IntObject_AsINT(self) + IntObject_AsINT(ob));
+    Object *ret = Object_NULL;
+    if(Object_TYPE(ob) == (TypeObject *)&Int_Type) {
+        ret = IntObject_FromInt(IntObject_AsINT(self) + IntObject_AsINT(ob));
+    } else if(Object_TYPE(ob) == (TypeObject *)&Long_Type) {
+        ret = LongObject_FromLong((long)IntObject_AsINT(self) + LongObject_AsLONG(ob));
+    } else if(Object_TYPE(ob) == (TypeObject *)&Float_Type) {
+        ret = FloatObject_FromFloat((float)IntObject_AsINT(self) + FloatObject_AsFLOAT(ob));
+    } else if(Object_TYPE(ob) == (TypeObject *)&Double_Type) {
+        ret = DoubleObject_FromDouble((double)IntObject_AsINT(self) + DoubleObject_AsDOUBLE(ob));
+    }
+    return ret;
+}
+
+static Object *int_method_sub(Object *self, Object *ob) {
+    Object *ret = Object_NULL;
+    if(Object_TYPE(ob) == (TypeObject *)&Int_Type) {
+        ret = IntObject_FromInt(IntObject_AsINT(self) - IntObject_AsINT(ob));
+    } else if(Object_TYPE(ob) == (TypeObject *)&Long_Type) {
+        ret = LongObject_FromLong((long)IntObject_AsINT(self) - LongObject_AsLONG(ob));
+    } else if(Object_TYPE(ob) == (TypeObject *)&Float_Type) {
+        ret = FloatObject_FromFloat((float)IntObject_AsINT(self) - FloatObject_AsFLOAT(ob));
+    } else if(Object_TYPE(ob) == (TypeObject *)&Double_Type) {
+        ret = DoubleObject_FromDouble((double)IntObject_AsINT(self) - DoubleObject_AsDOUBLE(ob));
+    }
+    return ret;
+}
+
+static Object *int_method_mul(Object *self, Object *ob) {
+    Object *ret = Object_NULL;
+    if(Object_TYPE(ob) == (TypeObject *)&Int_Type) {
+        ret = IntObject_FromInt(IntObject_AsINT(self) * IntObject_AsINT(ob));
+    } else if(Object_TYPE(ob) == (TypeObject *)&Long_Type) {
+        ret = LongObject_FromLong((long)IntObject_AsINT(self) * LongObject_AsLONG(ob));
+    } else if(Object_TYPE(ob) == (TypeObject *)&Float_Type) {
+        ret = FloatObject_FromFloat((float)IntObject_AsINT(self) * FloatObject_AsFLOAT(ob));
+    } else if(Object_TYPE(ob) == (TypeObject *)&Double_Type) {
+        ret = DoubleObject_FromDouble((double)IntObject_AsINT(self) * DoubleObject_AsDOUBLE(ob));
+    }
+    return ret;
+}
+
+static Object *int_method_div(Object *self, Object *ob) {
+    Object *ret = Object_NULL;
+    if(Object_TYPE(ob) == (TypeObject *)&Int_Type) {
+        ret = IntObject_FromInt(IntObject_AsINT(self) / IntObject_AsINT(ob));
+    } else if(Object_TYPE(ob) == (TypeObject *)&Long_Type) {
+        ret = LongObject_FromLong((long)IntObject_AsINT(self) / LongObject_AsLONG(ob));
+    } else if(Object_TYPE(ob) == (TypeObject *)&Float_Type) {
+        ret = FloatObject_FromFloat((float)IntObject_AsINT(self) / FloatObject_AsFLOAT(ob));
+    } else if(Object_TYPE(ob) == (TypeObject *)&Double_Type) {
+        ret = DoubleObject_FromDouble((double)IntObject_AsINT(self) / DoubleObject_AsDOUBLE(ob));
+    }
+    return ret;
 }
 
 MethodDef int_methods[] = {
-    {"Add_Int", int_method_add},
+    {"Add", int_method_add},
+    {"Sub", int_method_sub},
+    {"Mul", int_method_mul},
+    {"Div", int_method_div},
     {Object_NULL, Object_NULL}
 };
 

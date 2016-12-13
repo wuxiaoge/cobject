@@ -9,6 +9,8 @@ typedef struct _strobject {
     char ob_sval[1];
 } StrObject;
 
+extern TypeObject Str_Type;
+
 #define StrObject_CONVERT(ob) ((StrObject *)(ob))
 #define StrObject_VALUE(ob) StrObject_CONVERT(ob)->ob_sval
 #define StrObject_SIZE(ob) StrObject_CONVERT(ob)->ob_size
