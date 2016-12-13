@@ -1,6 +1,61 @@
 #include "object.h"
 
+Object *str_method_concat(Object *self, Object *ob) {
+    size_t ssize = Object_VAR_SIZE(self);
+    size_t osize = Object_VAR_SIZE(ob);
+    char *buf = (char *)malloc(ssize + osize + 1);
+    memset(buf, 0, ssize + osize + 1);
+    memcpy(buf, StrObject_AsSTR(self), ssize);
+    memcpy(buf + ssize, StrObject_AsSTR(ob), osize);
+    Object *_s = StrObject_FromStr(buf);
+    free(buf);
+    return _s;
+}
+
+Object *str_method_substr(Object *self, Object *args) {
+    IntObject *a = IntObject_CONVERT(args);
+    int start = IntObject_AsINT(a);
+    int end = IntObject_AsINT(a+1);
+    size_t ssize = Object_VAR_SIZE(self);
+    if(!ssize) {
+        return Object_NULL;
+    }
+    if(start < 0) {
+        start = ssize + start;
+    }
+    if(start >= ssize) {
+        return Object_NULL;
+    }
+    if(end < 0) {
+        end = ssize + end;
+    }
+    if(end > ssize) {
+        end = ssize;
+    }
+    if(start < 0 || end < 0 || start > end) {
+        return Object_NULL;
+    }
+    char *buf = (char *)malloc(end - start + 1);
+    memset(buf, 0, end - start + 1);
+    memcpy(buf, StrObject_AsSTR(self) + start, end - start);
+    Object *_s = StrObject_FromStr(buf);
+    free(buf);
+    return _s;
+}
+
+Object *str_method_index(Object *self, Object *args) {
+    int index = 0;
+    const char *tmp = strstr(StrObject_AsSTR(self), StrObject_AsSTR(args));
+    if(tmp) {
+        index = (int)(tmp - StrObject_AsSTR(self));
+    }
+    return IntObject_FromInt(index);
+}
+
 MethodDef str_methods[] = {
+    {"Concat", str_method_concat},
+    {"Substr", str_method_substr},
+    {"Index", str_method_index},
     {Object_NULL, Object_NULL}
 };
 
