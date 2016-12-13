@@ -1,4 +1,5 @@
-objects = main.o object.o intobject.o longobject.o floatobject.o doubleobject.o strobject.o
+objects = main.o object.o intobject.o longobject.o floatobject.o doubleobject.o \
+strobject.o listobject.o
 
 main: $(objects)
 	gcc -o main $(objects)
@@ -17,6 +18,8 @@ doubleobject.o: objects/doubleobject.c includes/object.h
 	gcc -c objects/doubleobject.c -I includes
 strobject.o: objects/strobject.c includes/object.h
 	gcc -c objects/strobject.c -I includes
+listobject.o: objects/listobject.c includes/object.h
+	gcc -c objects/listobject.c -I includes
 
 .PHONY: clean
 clean:

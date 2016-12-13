@@ -48,21 +48,6 @@ typedef struct _typeobject {
 
 extern TypeObject Object_Type;
 
-#if 0
-#define Object_TYPE_INIT(ob, args) \
-    (ob && Object_TYPE(ob) && Object_TYPE(ob)->tp_init) ? \
-        Object_TYPE(ob)->tp_init(Object_CONVERT(ob), Object_CONVERT(args)) : -1
-#define Object_TYPE_DEINIT(ob) \
-    (ob && Object_TYPE(ob) && Object_TYPE(ob)->tp_deinit) ? \
-        Object_TYPE(ob)->tp_deinit(Object_CONVERT(ob)) : -1
-#define Object_TYPE_HASH(ob) \
-    (ob && Object_TYPE(ob) && Object_TYPE(ob)->tp_hash) ? \
-        Object_TYPE(ob)->tp_hash(Object_CONVERT(ob)) : -1
-#define Object_TYPE_STR(ob) \
-    (ob && Object_TYPE(ob) && Object_TYPE(ob)->tp_str) ? \
-        Object_TYPE(ob)->tp_str(Object_CONVERT(ob)) : Object_NULL
-#endif
-
 #define Object_CONVERT(ob) ((Object *)(ob))
 #define Object_NULL ((void *)0)
 #define Object_MALLOC(size) Object_CONVERT(malloc((size)))
@@ -111,5 +96,6 @@ void Object_Free(Object **);
 #include "floatobject.h"
 #include "doubleobject.h"
 #include "strobject.h"
+#include "listobject.h"
 
 
