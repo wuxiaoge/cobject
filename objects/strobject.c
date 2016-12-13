@@ -16,9 +16,14 @@ static Object *str_method_concat(Object *self, Object *ob) {
 }
 
 static Object *str_method_substr(Object *self, Object *args) {
-    IntObject *a = IntObject_CONVERT(args);
-    int start = IntObject_AsINT(a);
-    int end = IntObject_AsINT(a+1);
+    if(!ListObject_CHECK(args)) {
+        return Object_NULL;
+    }
+    Object *ostart = ListObject_GetITEM(args, 0);
+    Object *oend = ListObject_GetITEM(args, 1);
+    int start = IntObject_AsINT(ostart);
+    int end = IntObject_AsINT(oend);
+    printf("%d    %d\n", start, end);
     size_t ssize = Object_VAR_SIZE(self);
     if(!ssize) {
         return Object_NULL;

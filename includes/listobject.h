@@ -19,7 +19,7 @@ extern TypeObject List_Type;
 #define ListObject_ALLOCATED(ob) ListObject_CONVERT(ob)->allocated
 #define ListObject_GetITEM(ob, idx) *(ListObject_VALUE(ob) + (idx))
 
-Object *ListObject_New();
+Object *ListObject_New(size_t);
 
 #ifdef __cplusplus
 }
