@@ -6,6 +6,15 @@ int callback(Object *idx, Object *it) {
     return 0;
 }
 
+Object *map_cb(Object *idx, Object *it) {
+    Object *_i = IntObject_FromInt(2);
+    Object *_ri = Object_CallMethod(idx, "Add", _i);
+    Object *ret = Object_CallMethod(it, "Mul" ,_ri);
+    Object_DECREF(_i);
+    Object_DECREF(_ri);
+    return ret;
+}
+
 int main(int argc, char *args[]) {
    Object *s = StrObject_FromStr("hello world !!!");
    Object *start = IntObject_FromInt(1);
@@ -18,7 +27,10 @@ int main(int argc, char *args[]) {
    printf("%s\n", StrObject_AsSTR(s));
    printf("%s\n", StrObject_AsSTR(ss));
    Object_CallMethod(lst, "Foreach", Object_CONVERT(callback));
-   printf("%d\n", Object_Equal(end, end1));
+   printf("===== %d\n", Object_Equal(end, end1));
+   Object *ls = Object_CallMethod(lst, "Map", Object_CONVERT(map_cb));
+   Object_CallMethod(ls, "Foreach", Object_CONVERT(callback));
+   Object_DECREF(ls);
    Object_DECREF(ss);
    Object_DECREF(start);
    Object_DECREF(end);

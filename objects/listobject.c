@@ -102,7 +102,7 @@ static Object *list_method_foreach(Object *self, Object *func) {
     int i = 0, ret = 0;
     Object *index = Object_NULL;
     Object *item = Object_NULL;
-    list_item_callback callback = (list_item_callback)func;
+    list_item_foreach_cb callback = (list_item_foreach_cb)func;
     for(; i < ListObject_SIZE(self); i++) {
         index = IntObject_FromInt(i);
         item = ListObject_GetITEM(self, i);
@@ -117,12 +117,29 @@ static Object *list_method_foreach(Object *self, Object *func) {
     return Object_NULL;
 }
 
+static Object *list_method_map(Object *self, Object *func) {
+    Object *_idx = Object_NULL;
+    Object *_item = Object_NULL;
+    list_item_map_cb callback = (list_item_map_cb)func;
+    Object *_lst = ListObject_New(ListObject_SIZE(self));
+    int i = 0;
+    for(;i < ListObject_SIZE(self); i++) {
+        _idx = IntObject_FromInt(i);
+        _item = callback(_idx, ListObject_GetITEM(self, i));
+        Object_CallMethod(_lst, "Append", _item);
+        Object_DECREF(_idx);
+        Object_DECREF(_item);
+    }
+    return _lst;
+}
+
 static MethodDef list_methods[] = {
     {"Append", list_method_append},
     {"Remove", list_method_remove},
     {"Slice", list_method_slice},
     {"Get", list_method_get},
     {"Foreach", list_method_foreach},
+    {"Map", list_method_map},
     {Object_NULL, Object_NULL}
 };
 

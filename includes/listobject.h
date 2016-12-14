@@ -4,7 +4,8 @@
 extern "C" {
 #endif
 
-typedef int (*list_item_callback)(Object *, Object *);
+typedef int (*list_item_foreach_cb)(Object *, Object *);
+typedef Object *(*list_item_map_cb)(Object *, Object *);
 
 typedef struct _listobject {
     Object_VAR_HEAD
