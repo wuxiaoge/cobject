@@ -90,6 +90,10 @@ static long str_hash(Object *self) {
     return -1L;
 }
 
+static BOOL str_equal(Object *self, Object *ob) {
+    return 0 == strcmp(StrObject_AsSTR(self), StrObject_AsSTR(ob)) ? TRUE : FALSE;
+}
+
 static Object *str_str(Object *self) {
     Object_INCREF(self);
     return self;
@@ -100,6 +104,7 @@ TypeObject Str_Type = {
     .tp_init = str_init,
     .tp_deinit = str_deinit,
     .tp_hash = str_hash,
+    .tp_equal = str_equal,
     .tp_str = str_str,
     .tp_methods = str_methods 
 };

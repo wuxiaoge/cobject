@@ -80,6 +80,10 @@ static long double_hash(Object *self) {
     return -1L;
 }
 
+static BOOL double_equal(Object *self, Object *ob) {
+    return DoubleObject_AsDOUBLE(self) == DoubleObject_AsDOUBLE(ob) ? TRUE : FALSE;
+}
+
 static Object *double_str(Object *self) {
     char s[32] = {0};
     sprintf(s, "%lf", DoubleObject_AsDOUBLE(self));
@@ -91,6 +95,7 @@ TypeObject Double_Type = {
     .tp_init = double_init,
     .tp_deinit = double_deinit,
     .tp_hash = double_hash,
+    .tp_equal = double_equal,
     .tp_str = double_str,
     .tp_methods = double_methods
 };

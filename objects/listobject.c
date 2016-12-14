@@ -158,6 +158,7 @@ TypeObject List_Type = {
     .tp_init = list_init,
     .tp_deinit = list_deinit,
     .tp_hash = list_hash,
+    .tp_equal = Object_NULL,
     .tp_str = list_str,
     .tp_methods = list_methods
 };

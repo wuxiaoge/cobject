@@ -36,6 +36,7 @@ typedef struct _varobject {
 typedef int (*initfunc)(Object *, Object *);
 typedef int (*deinitfunc)(Object *);
 typedef long (*hashfunc)(Object *);
+typedef BOOL (*equalfunc)(Object *, Object *);
 typedef Object *(*strfunc)(Object *);
 typedef Object *(*methodfunc)(Object *, Object *);
 
@@ -49,6 +50,7 @@ typedef struct _typeobject {
     initfunc tp_init;
     deinitfunc tp_deinit;
     hashfunc tp_hash;
+    equalfunc tp_equal;
     strfunc tp_str;
     struct _methoddef *tp_methods;
 } TypeObject;
@@ -78,6 +80,7 @@ extern TypeObject Object_Type;
 int TypeObject_Init(Object *, TypeObject *, Object *);
 int TypeObject_Deinit(Object *, TypeObject *);
 long TypeObject_Hash(Object *, TypeObject *);
+BOOL TypeObject_Equal(Object *, TypeObject *, Object *);
 Object *TypeObject_Str(Object *, TypeObject *);
 
 Object *Object_Malloc(TypeObject *, size_t);
@@ -85,6 +88,7 @@ int Object_Extend(Object *, TypeObject *, size_t);
 int Object_Init(Object *, Object *);
 int Object_Deinit(Object *);
 long Object_Hash(Object *);
+BOOL Object_Equal(Object *, Object *);
 Object *Object_Str(Object *);
 BOOL Object_Check(Object *, TypeObject *);
 methodfunc Object_GetMethod(Object *, Object *);

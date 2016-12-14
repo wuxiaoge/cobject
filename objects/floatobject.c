@@ -80,6 +80,10 @@ static long float_hash(Object *self) {
     return -1L;
 }
 
+static BOOL float_equal(Object *self, Object *ob) {
+    return FloatObject_AsFLOAT(self) == FloatObject_AsFLOAT(ob) ? TRUE : FALSE;
+}
+
 static Object *float_str(Object *self) {
     char s[32] = {0};
     sprintf(s, "%f", FloatObject_AsFLOAT(self));
@@ -91,6 +95,7 @@ TypeObject Float_Type = {
     .tp_init = float_init,
     .tp_deinit = float_deinit,
     .tp_hash = float_hash,
+    .tp_equal = float_equal,
     .tp_str = float_str,
     .tp_methods = float_methods
 };

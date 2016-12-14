@@ -80,6 +80,10 @@ static long int_hash(Object *self) {
     return IntObject_VALUE(self);
 }
 
+static BOOL int_equal(Object *self, Object *ob) {
+    return IntObject_AsINT(self) == IntObject_AsINT(ob) ? TRUE : FALSE;
+}
+
 static Object *int_str(Object *self) {
     char s[32] = {0};
     sprintf(s, "%d", IntObject_AsINT(self));
@@ -91,6 +95,7 @@ TypeObject Int_Type = {
     .tp_init = int_init,
     .tp_deinit = int_deinit,
     .tp_hash = int_hash,
+    .tp_equal = int_equal,
     .tp_str = int_str,
     .tp_methods = int_methods
 };

@@ -80,6 +80,10 @@ static long long_hash(Object *self) {
     return LongObject_VALUE(self);
 }
 
+static BOOL long_equal(Object *self, Object *ob) {
+    return LongObject_AsLONG(self) == LongObject_AsLONG(ob) ? TRUE : FALSE;
+}
+
 static Object *long_str(Object *self) {
     char s[32] = {0};
     sprintf(s, "%ld", LongObject_AsLONG(self));
@@ -91,6 +95,7 @@ TypeObject Long_Type = {
     .tp_init = long_init,
     .tp_deinit = long_deinit,
     .tp_hash = long_hash,
+    .tp_equal = long_equal,
     .tp_str = long_str,
     .tp_methods = long_methods
 };
