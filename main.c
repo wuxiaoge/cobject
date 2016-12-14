@@ -16,11 +16,13 @@ int main(int argc, char *args[]) {
    printf("%s\n", StrObject_AsSTR(s));
    printf("%s\n", StrObject_AsSTR(ss));
    Object_CallMethod(lst, "Foreach", Object_CONVERT(callback));
+   printf("%d\n", Object_Check(s, &Object_Type));
    Object_DECREF(ss);
    Object_DECREF(start);
    Object_DECREF(end);
    Object_DECREF(lst);
    Object_DECREF(s);
+
    return 0;
 }
 

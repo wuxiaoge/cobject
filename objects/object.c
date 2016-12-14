@@ -116,7 +116,14 @@ Object *Object_Str(Object *self) {
 }
 
 int Object_Check(Object *self, TypeObject *type) {
-    return Object_CHECK(self, type) ? 1 : 0;
+    if(Object_TYPE(self) == type) {
+        return 1;
+    }
+    Object *_base = Object_BASE(self);
+    if(!_base) {
+        return 0;
+    }
+    return Object_Check(_base, type);
 }
 
 methodfunc Object_GetMethod(Object *self, Object *name) {
