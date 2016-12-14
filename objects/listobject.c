@@ -80,7 +80,8 @@ static Object *list_method_slice(Object *self, Object *args) {
         return Object_NULL;
     }
     Object *_lst = ListObject_New((int)(end - start));
-    for(int i = start; i < end; i++) {
+    int i = start;
+    for(; i < end; i++) {
         Object_CallMethod(_lst, "Append", ListObject_GetITEM(self, i));
     }
     return _lst;
@@ -115,7 +116,8 @@ static int list_init(Object *self, Object *args) {
 
 static int list_deinit(Object *self) {
     if(ListObject_VALUE(self)) {
-        for(int i = 0; i < ListObject_SIZE(self); i++) {
+        int i = 0;
+        for(; i < ListObject_SIZE(self); i++) {
             Object_DECREF(ListObject_GetITEM(self, i));
         }
         free(ListObject_VALUE(self));

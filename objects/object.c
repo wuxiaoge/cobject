@@ -133,6 +133,7 @@ methodfunc Object_GetMethod(Object *self, Object *name) {
 Object *Object_CallMethod(Object *self, const char *name, Object *args) {
     Object *_s = StrObject_FromStr(name);
     methodfunc mf = Object_GetMethod(self, _s);
+    Object_DECREF(_s);
     if(mf) {
         return mf(self, args);
     }
