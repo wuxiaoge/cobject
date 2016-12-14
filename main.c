@@ -1,8 +1,9 @@
 #include "includes/object.h"
 
-void callback(Object *idx, Object *it) {
+int callback(Object *idx, Object *it) {
     printf("%d    ", IntObject_AsINT(idx));
     printf("%d\n", IntObject_AsINT(it));
+    return 0;
 }
 
 int main(int argc, char *args[]) {

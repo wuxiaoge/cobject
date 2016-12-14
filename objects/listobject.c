@@ -99,7 +99,7 @@ static Object *list_method_get(Object *self, Object *ob) {
 }
 
 static Object *list_method_foreach(Object *self, Object *func) {
-    int i = 0;
+    int i = 0, ret = 0;
     Object *index = Object_NULL;
     Object *item = Object_NULL;
     list_item_callback callback = (list_item_callback)func;
@@ -107,9 +107,12 @@ static Object *list_method_foreach(Object *self, Object *func) {
         index = IntObject_FromInt(i);
         item = ListObject_GetITEM(self, i);
         Object_INCREF(item);
-        callback(index, item);
+        ret = callback(index, item);
         Object_DECREF(index);
         Object_DECREF(item);
+        if(ret) {
+            break;
+        }
     }
     return Object_NULL;
 }
