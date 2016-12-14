@@ -10,6 +10,12 @@
 extern "C" {
 #endif
 
+#define BOOL int
+#define TRUE 1
+#define FALSE 0
+#define Object_OK 0
+#define Object_ERROR -1
+
 #define Object_HEAD \
     size_t ob_refcnt; \
     struct _typeobject *ob_type; \
@@ -80,7 +86,7 @@ int Object_Init(Object *, Object *);
 int Object_Deinit(Object *);
 long Object_Hash(Object *);
 Object *Object_Str(Object *);
-int Object_Check(Object *, TypeObject *);
+BOOL Object_Check(Object *, TypeObject *);
 methodfunc Object_GetMethod(Object *, Object *);
 Object *Object_CallMethod(Object *, const char *, Object *);
 size_t Object_IncRef(Object *);

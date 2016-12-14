@@ -5,11 +5,11 @@ static MethodDef object_methods[] = {
 };
 
 static int object_init(Object *self, Object *args) {
-    return 0;
+    return Object_OK;
 }
 
 static int object_deinit(Object *self) {
-    return 0;
+    return Object_OK;
 }
 
 static long object_hash(Object *self) {
@@ -115,13 +115,13 @@ Object *Object_Str(Object *self) {
     return TypeObject_Str(self, Object_TYPE(self));
 }
 
-int Object_Check(Object *self, TypeObject *type) {
+BOOL Object_Check(Object *self, TypeObject *type) {
     if(Object_TYPE(self) == type) {
-        return 1;
+        return TRUE;
     }
     Object *_base = Object_BASE(self);
     if(!_base) {
-        return 0;
+        return FALSE;
     }
     return Object_Check(_base, type);
 }

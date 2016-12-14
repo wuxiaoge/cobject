@@ -80,10 +80,10 @@ static int str_init(Object *self, Object *args) {
     const char *_s = (const char *)args;
     *(char *)(StrObject_VALUE(self) + StrObject_SIZE(self)) = 0;
     memcpy(StrObject_VALUE(self), _s, StrObject_SIZE(self));
-    return 0;
+    return Object_OK;
 } 
 static int str_deinit(Object *self) {
-    return 0;
+    return Object_OK;
 }
 
 static long str_hash(Object *self) {

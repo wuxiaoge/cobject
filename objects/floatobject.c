@@ -69,11 +69,11 @@ static int float_init(Object *self, Object *args) {
     Object_Init(Object_BASE(self), Object_NULL);
     float _f = *(float *)args;
     FloatObject_VALUE(self) = _f;
-    return 0;
+    return Object_OK;
 }
 
 static int float_deinit(Object *self) {
-    return 0;
+    return Object_OK;
 }
 
 static long float_hash(Object *self) {

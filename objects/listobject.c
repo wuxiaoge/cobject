@@ -132,7 +132,7 @@ static int list_init(Object *self, Object *args) {
     ListObject_SIZE(self) = 0L;
     ListObject_ALLOCATED(self) = 0L;
     list_resize(self, size);
-    return 0;
+    return Object_OK;
 }
 
 static int list_deinit(Object *self) {
@@ -143,7 +143,7 @@ static int list_deinit(Object *self) {
         }
         free(ListObject_VALUE(self));
     }
-    return 0;
+    return Object_OK;
 }
 
 static long list_hash(Object *self) {

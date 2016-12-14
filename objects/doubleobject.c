@@ -69,11 +69,11 @@ static int double_init(Object *self, Object *args) {
     Object_Init(Object_BASE(self), Object_NULL);
     double _d = *(double *)args;
     DoubleObject_VALUE(self) = _d;
-    return 0;
+    return Object_OK;
 }
 
 static int double_deinit(Object *self) {
-    return 0;
+    return Object_OK;
 }
 
 static long double_hash(Object *self) {

@@ -69,11 +69,11 @@ static int int_init(Object *self, Object *args) {
     Object_Init(Object_BASE(self), Object_NULL); 
     int _i = *(int *)args;
     IntObject_VALUE(self) = _i;
-    return 0;
+    return Object_OK;
 }
 
 static int int_deinit(Object *self) {
-    return 0;
+    return Object_OK;
 }
 
 static long int_hash(Object *self) {
