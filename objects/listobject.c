@@ -97,11 +97,29 @@ static Object *list_method_get(Object *self, Object *ob) {
     }
     return ListObject_GetITEM(self, index);
 }
+
+static Object *list_method_foreach(Object *self, Object *func) {
+    int i = 0;
+    Object *index = Object_NULL;
+    Object *item = Object_NULL;
+    list_item_callback callback = (list_item_callback)func;
+    for(; i < ListObject_SIZE(self); i++) {
+        index = IntObject_FromInt(i);
+        item = ListObject_GetITEM(self, i);
+        Object_INCREF(item);
+        callback(index, item);
+        Object_DECREF(index);
+        Object_DECREF(item);
+    }
+    return Object_NULL;
+}
+
 static MethodDef list_methods[] = {
     {"Append", list_method_append},
     {"Remove", list_method_remove},
     {"Slice", list_method_slice},
     {"Get", list_method_get},
+    {"Foreach", list_method_foreach},
     {Object_NULL, Object_NULL}
 };
 

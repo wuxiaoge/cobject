@@ -4,6 +4,8 @@
 extern "C" {
 #endif
 
+typedef void (*list_item_callback)(Object *, Object *);
+
 typedef struct _listobject {
     Object_VAR_HEAD
     Object **ob_item;
