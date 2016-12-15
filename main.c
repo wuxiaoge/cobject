@@ -35,9 +35,11 @@ int main(int argc, char *args[]) {
    printf("===== %d\n", Object_Equal(end, end1));
    Object *ls = Object_CallMethod(lst, "Map", Object_CONVERT(map_cb));
    Object_CallMethod(ls, "Foreach", Object_CONVERT(callback));
-   printf(".......\n");
+   Object *str = Object_Str(ls);
+   printf(".......%s\n", StrObject_AsSTR(str));
    Object *fs = Object_CallMethod(ls, "Filter", Object_CONVERT(filter_cb));
    Object_CallMethod(fs, "Foreach", Object_CONVERT(callback));
+   Object_DECREF(str);
    Object_DECREF(fs);
    Object_DECREF(ls);
    Object_DECREF(ss);
