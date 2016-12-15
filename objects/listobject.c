@@ -38,13 +38,24 @@ static void list_move(Object *self, int i) {
     ListObject_GetITEM(self, _i) = Object_NULL;
 }
 
+static Object *list_method_get(Object *self, Object *ob) {
+    if(!IntObject_CHECK(ob)) {
+        return Object_NULL;
+    }
+    int index = IntObject_AsINT(ob);
+    if(ListObject_SIZE(self) <= (size_t)index) {
+        return Object_NULL;
+    }
+    return ListObject_GetITEM(self, index);
+}
+
 static Object *list_method_remove(Object *self, Object *ob) {
     Object *item = Object_NULL;
     Object *index = Object_NULL;
     int i = 0;
     for(; i < ListObject_SIZE(self); i++) {
         index = IntObject_FromInt(i);
-        item = Object_CallMethod(self, "Get", index);
+        item = list_method_get(self, index);
         Object_DECREF(index);
         if(item == ob) {
             Object_DECREF(item);
@@ -89,22 +100,11 @@ static Object *list_method_slice(Object *self, Object *args) {
     int i = start;
     for(; i < end; i++) {
         index = IntObject_FromInt(i);
-        item = Object_CallMethod(self, "Get", index);
-        Object_CallMethod(_lst, "Append", item);
+        item = list_method_get(self, index);
+        list_method_append(_lst, item);
         Object_DECREF(index);
     }
     return _lst;
-}
-
-static Object *list_method_get(Object *self, Object *ob) {
-    if(!IntObject_CHECK(ob)) {
-        return Object_NULL;
-    }
-    int index = IntObject_AsINT(ob);
-    if(ListObject_SIZE(self) <= (size_t)index) {
-        return Object_NULL;
-    }
-    return ListObject_GetITEM(self, index);
 }
 
 static Object *list_method_foreach(Object *self, Object *func) {
@@ -114,7 +114,7 @@ static Object *list_method_foreach(Object *self, Object *func) {
     list_item_foreach_cb callback = (list_item_foreach_cb)func;
     for(; i < ListObject_SIZE(self); i++) {
         index = IntObject_FromInt(i);
-        item = Object_CallMethod(self, "Get", index);
+        item = list_method_get(self, index);
         ret = callback(index, item);
         Object_DECREF(index);
         if(ret) {
@@ -133,9 +133,9 @@ static Object *list_method_map(Object *self, Object *func) {
     int i = 0;
     for(;i < ListObject_SIZE(self); i++) {
         index = IntObject_FromInt(i);
-        _item = Object_CallMethod(self, "Get", index);
+        _item = list_method_get(self, index);
         item = callback(index, _item);
-        Object_CallMethod(_lst, "Append", item);
+        list_method_append(_lst, item);
         Object_DECREF(index);
         Object_DECREF(item);
     }
@@ -150,10 +150,10 @@ static Object *list_method_filter(Object *self, Object *func) {
     int i = 0, ret = FALSE;
     for(;i < ListObject_SIZE(self); i++) {
         index = IntObject_FromInt(i);
-        item = Object_CallMethod(self, "Get", index);
+        item = list_method_get(self, index);
         ret = callback(index, item);
         if(ret) {
-            Object_CallMethod(_lst, "Append", item);
+            list_method_append(_lst, item);
         }
         Object_DECREF(index);
     }
@@ -187,7 +187,7 @@ static int list_deinit(Object *self) {
         int i = 0;
         for(; i < ListObject_SIZE(self); i++) {
             index = IntObject_FromInt(i);
-            item = Object_CallMethod(self, "Get", index);
+            item = list_method_get(self, index);
             Object_DECREF(index);
             Object_DECREF(item);
         }
@@ -210,7 +210,7 @@ static Object *list_str(Object *self) {
     Object *_dh = StrObject_FromStr(", ");
     for(; i < ListObject_SIZE(self); i++) {
         index = IntObject_FromInt(i);
-        item = Object_CallMethod(self, "Get", index);
+        item = list_method_get(self, index);
         Object_DECREF(index);
         _s = Object_Str(item);
         tmp = Object_CallMethod(ret, "Concat", _s);

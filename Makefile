@@ -1,5 +1,6 @@
 objects = main.o object.o intobject.o longobject.o floatobject.o doubleobject.o \
-strobject.o listobject.o
+strobject.o listobject.o ioobject.o stdinobject.o stdoutobject.o stderrobject.o \
+fileobject.o
 
 main: $(objects)
 	gcc -o main $(objects)
@@ -20,6 +21,16 @@ strobject.o: objects/strobject.c includes/object.h
 	gcc -c objects/strobject.c -I includes
 listobject.o: objects/listobject.c includes/object.h
 	gcc -c objects/listobject.c -I includes
+ioobject.o: objects/ioobject.c includes/object.h
+	gcc -c objects/ioobject.c -I includes
+stdinobject.o: objects/stdinobject.c includes/object.h
+	gcc -c objects/stdinobject.c -I includes
+stdoutobject.o: objects/stdoutobject.c includes/object.h
+	gcc -c objects/stdoutobject.c -I includes
+stderrobject.o: objects/stderrobject.c includes/object.h
+	gcc -c objects/stderrobject.c -I includes
+fileobject.o: objects/fileobject.c includes/object.h
+	gcc -c objects/fileobject.c -I includes
 
 .PHONY: clean
 clean:

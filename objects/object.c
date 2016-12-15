@@ -152,25 +152,30 @@ BOOL Object_Check(Object *self, TypeObject *type) {
     return Object_Check(_base, type);
 }
 
-methodfunc Object_GetMethod(Object *self, Object *name) {
+methodfunc Object_GetMethod(Object *self, Object *name, Object **owner) {
     MethodDef *md = Object_TYPE(self)->tp_methods;
     while(md && md->md_name){
         if(!strcmp(StrObject_AsSTR(name), md->md_name)) {
+            *owner = self;
             return md->md_func;
         }
         md++;
     }
-    return Object_BASE(self) ? Object_GetMethod(Object_BASE(self), name) : Object_NULL;
+    return Object_BASE(self) ? Object_GetMethod(Object_BASE(self), name, owner) : Object_NULL;
 }
 
 Object *Object_CallMethod(Object *self, const char *name, Object *args) {
+    Object *ret = Object_NULL;
+    Object **_owner = (Object **)malloc(sizeof(Object *));
+    *_owner = Object_NULL;
     Object *_s = StrObject_FromStr(name);
-    methodfunc mf = Object_GetMethod(self, _s);
+    methodfunc mf = Object_GetMethod(self, _s, _owner);
     Object_DECREF(_s);
     if(mf) {
-        return mf(self, args);
+        ret = mf(*_owner, args);
     }
-    return Object_NULL;
+    free(_owner);
+    return ret;
 }
 
 size_t Object_IncRef(Object *self) {

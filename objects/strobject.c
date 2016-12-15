@@ -9,8 +9,7 @@ static Object *str_method_concat(Object *self, Object *ob) {
     char *buf = (char *)malloc(ssize + osize + 1);
     memcpy(buf, StrObject_AsSTR(self), ssize);
     memcpy(buf + ssize, StrObject_AsSTR(ob), osize);
-    *(char *)(buf + ssize + osize) = 0;
-    Object *_s = StrObject_FromStr(buf);
+    Object *_s = StrObject_FromStrAndSize(buf, ssize + osize);
     free(buf);
     return _s;
 }

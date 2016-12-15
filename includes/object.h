@@ -91,7 +91,7 @@ long Object_Hash(Object *);
 BOOL Object_Equal(Object *, Object *);
 Object *Object_Str(Object *);
 BOOL Object_Check(Object *, TypeObject *);
-methodfunc Object_GetMethod(Object *, Object *);
+methodfunc Object_GetMethod(Object *, Object *, Object **);
 Object *Object_CallMethod(Object *, const char *, Object *);
 size_t Object_IncRef(Object *);
 size_t Object_DecRef(Object *);
@@ -108,5 +108,10 @@ void Object_Free(Object **);
 #include "doubleobject.h"
 #include "strobject.h"
 #include "listobject.h"
+#include "ioobject.h"
+#include "stdinobject.h"
+#include "stdoutobject.h"
+#include "stderrobject.h"
+#include "fileobject.h"
 
 
