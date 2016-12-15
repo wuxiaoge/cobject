@@ -5,6 +5,7 @@ extern "C" {
 #endif
 
 typedef int (*list_item_foreach_cb)(Object *, Object *);
+typedef BOOL (*list_item_filter_cb)(Object *, Object *);
 typedef Object *(*list_item_map_cb)(Object *, Object *);
 
 typedef struct _listobject {
