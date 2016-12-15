@@ -1,4 +1,4 @@
-#include "includes/object.h"
+#include "object.h"
 
 int callback(Object *idx, Object *it) {
     printf("%d    ", IntObject_AsINT(idx));
