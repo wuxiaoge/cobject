@@ -15,7 +15,7 @@ extern TypeObject File_Type;
 #define FileObject_CONVERT(ob) ((FileObject *)(ob))
 #define FileObject_FILENAME(ob) FileObject_CONVERT(ob)->ob_filename
 
-Object *FileObject_Open(Object *filename, Object *status);
+Object *FileObject_Open(Object *, Object *);
 
 #ifdef __cplusplus
 }

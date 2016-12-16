@@ -12,10 +12,10 @@ static int file_init(Object *self, Object *args) {
     Object *_i0 = IntObject_FromInt(0);
     Object *ofilename = Object_CallMethod(args, "Get", _i0);
     Object *_i1 = IntObject_FromInt(1);
-    Object *ostatus = Object_CallMethod(args, "Get", _i1);
+    Object *omode = Object_CallMethod(args, "Get", _i1);
     const char *filename = StrObject_AsSTR(ofilename);
-    const char *status = StrObject_AsSTR(ostatus);
-    FILE *_file = fopen(filename, status);
+    const char *mode = StrObject_AsSTR(omode);
+    FILE *_file = fopen(filename, mode);
     Object_Init(Object_BASE(self), Object_CONVERT(_file));
     Object_INCREF(ofilename);
     FileObject_FILENAME(self) = ofilename;
@@ -51,11 +51,11 @@ TypeObject File_Type = {
     .tp_methods = file_methods
 };
 
-Object *FileObject_Open(Object *filename, Object *status) {
+Object *FileObject_Open(Object *filename, Object *mode) {
     Object *_io = Object_Malloc(&File_Type, sizeof(FileObject));
     Object *_lst = ListObject_New(2);
     Object_CallMethod(_lst, "Append", filename);
-    Object_CallMethod(_lst, "Append", status);
+    Object_CallMethod(_lst, "Append", mode);
     Object_Init(_io, _lst);
     Object_DECREF(_lst);
     return _io;
