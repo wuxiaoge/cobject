@@ -172,6 +172,8 @@ static MethodDef list_methods[] = {
 };
 
 static int list_init(Object *self, Object *args) {
+    Object_Extend(self, &Object_Type, sizeof(Object));
+    Object_Init(Object_BASE(self), Object_NULL);
     int size = IntObject_AsINT(args);
     ListObject_VALUE(self) = Object_NULL;
     ListObject_SIZE(self) = 0L;
@@ -198,6 +200,10 @@ static int list_deinit(Object *self) {
 
 static long list_hash(Object *self) {
     return -1L;
+}
+
+static BOOL list_equal(Object *self, Object *ob) {
+    return Object_Equal(Object_BASE(self), Object_BASE(ob));
 }
 
 static Object *list_str(Object *self) {
@@ -239,7 +245,7 @@ TypeObject List_Type = {
     .tp_init = list_init,
     .tp_deinit = list_deinit,
     .tp_hash = list_hash,
-    .tp_equal = Object_NULL,
+    .tp_equal = list_equal,
     .tp_str = list_str,
     .tp_methods = list_methods
 };

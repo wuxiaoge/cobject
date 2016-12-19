@@ -134,6 +134,9 @@ long Object_Hash(Object *self) {
 }
 
 BOOL Object_Equal(Object *self, Object *ob) {
+    if( (!self) || (!ob) ) {
+        return FALSE;
+    }
     return TypeObject_Equal(self, Object_TYPE(self), ob);
 }
 

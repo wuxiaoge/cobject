@@ -13,6 +13,7 @@ int main(int argc, char *args[]) {
    Object_CallMethod(out, "Writeline", s);
    Object_CallMethod(out, "Writeline", ss);
    Object_CallMethod(out, "Writeline", lst);
+   printf("%d\n", Object_Equal(lst, lst));
    Object_DECREF(i2);
    Object_DECREF(i1);
    Object_DECREF(lst);
