@@ -25,10 +25,31 @@ static Object *io_method_writeline(Object *self, Object* ob) {
     return Object_NULL;
 }
 
+static Object *io_method_flush(Object *self, Object *ob) {
+    fflush(IoObject_VALUE(self));
+    return Object_NULL;
+}
+
+static Object *io_method_reopen(Object *self, Object *args) {
+    assert(ListObject_CHECK(args));
+    Object *zero = IntObject_FromInt(0);
+    Object *fname = Object_CallMethod(args, "Get", zero);
+    Object_DECREF(zero);
+    assert(StrObject_CHECK(fname));
+    Object *one = IntObject_FromInt(1);
+    Object *fmode = Object_CallMethod(args, "Get", one);
+    Object_DECREF(one);
+    assert(StrObject_CHECK(fmode));
+    assert(freopen(StrObject_AsSTR(fname), StrObject_AsSTR(fmode), IoObject_VALUE(self)));
+    return Object_NULL;
+}
+
 static MethodDef io_methods[] = {
     {"Read", io_method_read},
     {"Write", io_method_write},
     {"Writeline", io_method_writeline},
+    {"Flush", io_method_flush},
+    {"Reopen", io_method_reopen},
     {Object_NULL, Object_NULL}
 };
 
