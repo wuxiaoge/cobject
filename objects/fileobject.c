@@ -1,6 +1,20 @@
 #include "object.h"
 
+static Object *io_method_reopen(Object *self, Object *args) {
+    assert(ListObject_CHECK(args));
+    Object *old_filename = FileObject_FILENAME(self);
+    Object *zero = IntObject_FromInt(0);
+    Object *fname = Object_CallMethod(args, "Get", zero);
+    assert(StrObject_CHECK(fname));
+    Object_INCREF(fname);
+    FileObject_FILENAME(self) = fname;
+    Object_DECREF(zero);
+    Object_DECREF(old_filename);
+    return Object_CallMethod(Object_BASE(self), "Reopen", args);
+}
+
 static MethodDef file_methods[] = {
+    {"Reopen", io_method_reopen},
     {Object_NULL, Object_NULL}
 };
 
