@@ -1,7 +1,9 @@
 #include "object.h"
 
 static Object *io_method_reopen(Object *self, Object *args) {
-    assert(ListObject_CHECK(args));
+    if(!ListObject_CHECK(args)){
+        return Object_NULL;
+    }
     Object *old_filename = FileObject_FILENAME(self);
     Object *zero = IntObject_FromInt(0);
     Object *fname = Object_CallMethod(args, "Get", zero);

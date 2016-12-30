@@ -31,17 +31,25 @@ static Object *io_method_flush(Object *self, Object *ob) {
 }
 
 static Object *io_method_reopen(Object *self, Object *args) {
-    assert(ListObject_CHECK(args));
+    if(!ListObject_CHECK(args)) {
+        return Object_NULL;
+    }
     Object *zero = IntObject_FromInt(0);
     Object *fname = Object_CallMethod(args, "Get", zero);
     Object_DECREF(zero);
-    assert(StrObject_CHECK(fname));
+    if(!StrObject_CHECK(fname)) {
+        return Object_NULL;
+    }
     Object *one = IntObject_FromInt(1);
     Object *fmode = Object_CallMethod(args, "Get", one);
     Object_DECREF(one);
-    assert(StrObject_CHECK(fmode));
-    assert(freopen(StrObject_AsSTR(fname), StrObject_AsSTR(fmode), IoObject_VALUE(self)));
-    return Object_NULL;
+    if(!StrObject_CHECK(fmode)) {
+        return Object_NULL;
+    }
+    if(!freopen(StrObject_AsSTR(fname), StrObject_AsSTR(fmode), IoObject_VALUE(self))) {
+        return Object_NULL;
+    }
+    return self;
 }
 
 static MethodDef io_methods[] = {
@@ -95,3 +103,4 @@ Object *IoObject_FromFILE(FILE *file) {
     Object_Init(_io, Object_CONVERT(file));
     return _io;
 }
+

@@ -170,7 +170,6 @@ methodfunc Object_GetMethod(Object *self, Object *name, Object **owner) {
 Object *Object_CallMethod(Object *self, const char *name, Object *args) {
     Object *ret = Object_NULL;
     Object **_owner = (Object **)malloc(sizeof(Object *));
-    *_owner = Object_NULL;
     Object *_s = StrObject_FromStr(name);
     methodfunc mf = Object_GetMethod(self, _s, _owner);
     Object_DECREF(_s);
@@ -204,12 +203,10 @@ size_t Object_DecRef(Object *self) {
 }
 
 void Object_Free(Object **self) {
-    Object *_base = Object_NULL;
     Object *_self = self ? *self : Object_NULL;
     if(_self) {
-        _base = Object_BASE(_self);
-        if(_base) {
-            Object_Free(&_base);
+        if(Object_BASE(_self)) {
+            Object_Free(&Object_BASE(_self));
         }
         free(_self);
         *self = Object_NULL;
