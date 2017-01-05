@@ -17,7 +17,7 @@ static int stdout_init(Object *self, Object *args) {
 }
 
 static int stdout_deinit(Object *self) {
-    return Object_Deinit(Object_BASE(self));
+    return Object_OK;
 }
 
 static long stdout_hash(Object *self) {

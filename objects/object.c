@@ -175,6 +175,8 @@ Object *Object_CallMethod(Object *self, const char *name, Object *args) {
     Object_DECREF(_s);
     if(mf) {
         ret = mf(*_owner, args);
+    } else {
+        fprintf(stderr, "Error : not find function \"%s\" !!!\n", name);
     }
     free(_owner);
     return ret;

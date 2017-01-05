@@ -1,39 +1,23 @@
 #include "object.h"
 
 int main(int argc, char *args[]) {
-   Object *out = StdoutObject_New();
-
-   Object *fname = StrObject_FromStr("stdout.out");
-   Object *fmode = StrObject_FromStr("a+");
-   Object *arglst = ListObject_New(2);
-   Object_CallMethod(arglst, "Append", fname);
-   Object_CallMethod(arglst, "Append", fmode);
-   Object_CallMethod(out, "Reopen", arglst);
-   Object_DECREF(fname);
-   Object_DECREF(fmode);
-   Object_DECREF(arglst);
-
-   Object *s = StrObject_FromStr("hello world !!!");
-   Object *i1 = IntObject_FromInt(1);
-   Object *i2 = IntObject_FromInt(5);
+   Object *first = IntObject_FromInt(3);
+   Object *second = IntObject_FromInt(9);
    Object *lst = ListObject_New(2);
-   Object_CallMethod(lst, "Append", i1);
-   Object_CallMethod(lst, "Append", i2);
-   Object *ss = Object_CallMethod(s, "Substr", lst);
-   Object *sss = Object_CallMethod(s, "Concat", ss);
-   Object_CallMethod(out, "Writeline", s);
-   Object_CallMethod(out, "Writeline", ss);
+   Object_CallMethod(lst, "Append", first);
+   Object_DECREF(first);
+   Object_CallMethod(lst, "Append", second);
+   Object_DECREF(second);
+   Object *str = StrObject_FromStr("hello world !!!");
+   Object *out = StdoutObject_New();
    Object_CallMethod(out, "Writeline", lst);
-   printf("%d\n", Object_Equal(lst, lst));
-   Object_CallMethod(out, "Flush", Object_NULL);
-   Object_DECREF(i2);
-   Object_DECREF(i1);
+   Object_CallMethod(out, "Writeline", str);
+   Object *sub = Object_CallMethod(str, "Substr", lst);
+   Object_CallMethod(out, "Writeline", sub);
+   Object_DECREF(sub);
    Object_DECREF(lst);
-   Object_DECREF(sss);
-   Object_DECREF(ss);
-   Object_DECREF(s);
+   Object_DECREF(str);
    Object_DECREF(out);
-
    return 0;
 }
 

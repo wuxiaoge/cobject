@@ -1,9 +1,7 @@
 #include "object.h"
 
 static Object *str_method_concat(Object *self, Object *ob) {
-    if(!StrObject_CHECK(ob)) {
-        return Object_NULL;
-    }
+    assert(StrObject_CHECK(ob));
     size_t ssize = Object_VAR_SIZE(self);
     size_t osize = Object_VAR_SIZE(ob);
     char *buf = (char *)malloc(ssize + osize + 1);
@@ -15,9 +13,7 @@ static Object *str_method_concat(Object *self, Object *ob) {
 }
 
 static Object *str_method_substr(Object *self, Object *args) {
-    if(!ListObject_CHECK(args)) {
-        return Object_NULL;
-    }
+    assert(ListObject_CHECK(args));
     Object *ostart = ListObject_GetITEM(args, 0);
     Object *oend = ListObject_GetITEM(args, 1);
     int start = IntObject_AsINT(ostart);
@@ -41,19 +37,12 @@ static Object *str_method_substr(Object *self, Object *args) {
     if(start < 0 || end < 0 || start > end) {
         return Object_NULL;
     }
-    char *buf = (char *)malloc(end - start + 1);
-    memcpy(buf, StrObject_AsSTR(self) + start, end - start);
-    *(char *)(buf + end - start) = 0;
-    Object *_s = StrObject_FromStr(buf);
-    free(buf);
-    return _s;
+    return StrObject_FromStrAndSize(StrObject_AsSTR(self) + start, end - start);
 }
 
 static Object *str_method_index(Object *self, Object *ob) {
-    if(!StrObject_CHECK(ob)) {
-        return Object_NULL;
-    }
-    int index = 0;
+    assert(StrObject_CHECK(ob));
+    int index = -1;
     const char *tmp = strstr(StrObject_AsSTR(self), StrObject_AsSTR(ob));
     if(tmp) {
         index = (int)(tmp - StrObject_AsSTR(self));

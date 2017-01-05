@@ -1,9 +1,7 @@
 #include "object.h"
 
 static Object *io_method_read(Object *self, Object *ob) {
-    if(!IntObject_CHECK(ob)) {
-        return Object_NULL;
-    }
+    assert(IntObject_CHECK(ob));
     int size = IntObject_AsINT(ob);
     char *buf = (char *)malloc((size + 1) * sizeof(char));
     int rsize = (size_t)fread(buf, sizeof(char), size, IoObject_VALUE(self));
@@ -31,24 +29,17 @@ static Object *io_method_flush(Object *self, Object *ob) {
 }
 
 static Object *io_method_reopen(Object *self, Object *args) {
-    if(!ListObject_CHECK(args)) {
-        return Object_NULL;
-    }
+    assert(ListObject_CHECK(args) && ListObject_SIZE(args)==2);
     Object *zero = IntObject_FromInt(0);
     Object *fname = Object_CallMethod(args, "Get", zero);
     Object_DECREF(zero);
-    if(!StrObject_CHECK(fname)) {
-        return Object_NULL;
-    }
+    assert(StrObject_CHECK(fname));
     Object *one = IntObject_FromInt(1);
     Object *fmode = Object_CallMethod(args, "Get", one);
     Object_DECREF(one);
-    if(!StrObject_CHECK(fmode)) {
-        return Object_NULL;
-    }
-    if(!freopen(StrObject_AsSTR(fname), StrObject_AsSTR(fmode), IoObject_VALUE(self))) {
-        return Object_NULL;
-    }
+    assert(StrObject_CHECK(fmode));
+    FILE *tmp = freopen(StrObject_AsSTR(fname), StrObject_AsSTR(fmode), IoObject_VALUE(self));
+    assert(tmp);
     return self;
 }
 
@@ -64,8 +55,7 @@ static MethodDef io_methods[] = {
 static int io_init(Object *self, Object *args) {
     Object_Extend(self, &Object_Type, sizeof(Object));
     Object_Init(Object_BASE(self), Object_NULL);
-    FILE * _f = (FILE *)args;
-    IoObject_VALUE(self) = _f;
+    IoObject_VALUE(self) = (FILE *)args;
     return Object_OK;
 }
 

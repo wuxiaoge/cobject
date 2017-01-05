@@ -1,16 +1,14 @@
 #include "object.h"
 
 static Object *io_method_reopen(Object *self, Object *args) {
-    if(!ListObject_CHECK(args)){
-        return Object_NULL;
-    }
-    Object *old_filename = FileObject_FILENAME(self);
+    assert(ListObject_CHECK(args) && ListObject_SIZE(args)==1);
     Object *zero = IntObject_FromInt(0);
     Object *fname = Object_CallMethod(args, "Get", zero);
-    assert(StrObject_CHECK(fname));
-    Object_INCREF(fname);
-    FileObject_FILENAME(self) = fname;
     Object_DECREF(zero);
+    assert(StrObject_CHECK(fname));
+    Object *old_filename = FileObject_FILENAME(self);
+    FileObject_FILENAME(self) = fname;
+    Object_INCREF(fname);
     Object_DECREF(old_filename);
     return Object_CallMethod(Object_BASE(self), "Reopen", args);
 }
@@ -21,9 +19,7 @@ static MethodDef file_methods[] = {
 };
 
 static int file_init(Object *self, Object *args) {
-    if(!ListObject_CHECK(args)) {
-        return Object_ERROR;
-    }
+    assert(ListObject_CHECK(args) && ListObject_SIZE(args)==2);
     Object_Extend(self, &Io_Type, sizeof(IoObject));
     Object *_i0 = IntObject_FromInt(0);
     Object *ofilename = Object_CallMethod(args, "Get", _i0);

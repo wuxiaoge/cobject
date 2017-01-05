@@ -17,7 +17,7 @@ static int stdin_init(Object *self, Object *args) {
 }
 
 static int stdin_deinit(Object *self) {
-    return Object_Deinit(Object_BASE(self));
+    return Object_OK;
 }
 
 static long stdin_hash(Object *self) {

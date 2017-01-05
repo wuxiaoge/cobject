@@ -17,7 +17,7 @@ static int stderr_init(Object *self, Object *args) {
 }
 
 static int stderr_deinit(Object *self) {
-    return Object_Deinit(Object_BASE(self));
+    return Object_OK;
 }
 
 static long stderr_hash(Object *self) {

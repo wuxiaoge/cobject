@@ -39,9 +39,7 @@ static void list_move(Object *self, int i) {
 }
 
 static Object *list_method_get(Object *self, Object *ob) {
-    if(!IntObject_CHECK(ob)) {
-        return Object_NULL;
-    }
+    assert(IntObject_CHECK(ob));
     int index = IntObject_AsINT(ob);
     if(ListObject_SIZE(self) <= (size_t)index) {
         return Object_NULL;
@@ -68,9 +66,7 @@ static Object *list_method_remove(Object *self, Object *ob) {
 }
 
 static Object *list_method_slice(Object *self, Object *args) {
-    if(!ListObject_CHECK(args)) {
-        return Object_NULL;
-    }
+    assert(ListObject_CHECK(args));
     Object *ostart = ListObject_GetITEM(args, 0);
     Object *oend = ListObject_GetITEM(args, 1);
     int start = IntObject_AsINT(ostart);
