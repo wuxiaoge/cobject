@@ -1,6 +1,6 @@
 objects = main.o object.o intobject.o longobject.o floatobject.o doubleobject.o \
 strobject.o listobject.o ioobject.o stdinobject.o stdoutobject.o stderrobject.o \
-fileobject.o
+fileobject.o sockobject.o
 
 main: $(objects)
 	gcc -o main $(objects)
@@ -31,6 +31,8 @@ stderrobject.o: objects/stderrobject.c includes/object.h
 	gcc -c objects/stderrobject.c -I includes
 fileobject.o: objects/fileobject.c includes/object.h
 	gcc -c objects/fileobject.c -I includes
+sockobject.o: objects/sockobject.c includes/object.h
+	gcc -c objects/sockobject.c -I includes
 
 .PHONY: clean
 clean:

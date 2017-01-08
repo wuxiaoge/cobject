@@ -114,5 +114,6 @@ void Object_Free(Object **);
 #include "stdoutobject.h"
 #include "stderrobject.h"
 #include "fileobject.h"
+#include "sockobject.h"
 
 
