@@ -1,4 +1,5 @@
 #include "object.h"
+#include <netdb.h>
 
 int main(int argc, char *args[]) {
     Object *ip = StrObject_FromStr("14.215.177.37");
@@ -20,6 +21,13 @@ int main(int argc, char *args[]) {
     Object_DECREF(ip);
     Object_DECREF(port);
     Object_DECREF(sock);
+    struct hostent *host = gethostbyname("baidu.com");
+    int i = 0;
+    for(; i < host->h_length; i++) {
+        char buf[32] = {0};
+        inet_ntop(host->h_addrtype, *(host->h_addr_list + i), buf, sizeof(buf));
+        printf("%s\n", buf);
+    }
     return 0;
 }
 
