@@ -1,13 +1,13 @@
 #include "object.h"
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 
 static Object *sock_method_connect(Object *self, Object *args) {
     Object *ip = SockObject_IP(self);
     Object *port = SockObject_PORT(self);
     const char *_ip = StrObject_AsSTR(ip);
     int _port = IntObject_AsINT(port);
-    printf("IP : %s, PORT : %d \n", _ip, _port);
     struct sockaddr_in ipaddr;
     memset(&ipaddr, 0, sizeof(ipaddr));
     ipaddr.sin_family = AF_INET;
@@ -15,24 +15,68 @@ static Object *sock_method_connect(Object *self, Object *args) {
     ipaddr.sin_addr.s_addr = inet_addr(_ip);
     int sock = fileno(IoObject_AsFILE(Object_BASE(self)));
     if(connect(sock, (struct sockaddr *)&ipaddr, sizeof(ipaddr)) < 0) {
-        fprintf(stderr, "Socket Connect Fail !!!");
+        fprintf(stderr, "Socket Connect Fail !!!\n");
         exit(1);
     }
     return Object_NULL;
 }
 
 static Object *sock_method_listen(Object *self, Object *args) {
+    Object *ip = SockObject_IP(self);
+    Object *port = SockObject_PORT(self);
+    const char *_ip = StrObject_AsSTR(ip);
+    int _port = IntObject_AsINT(port);
+    struct sockaddr_in ipaddr;
+    memset(&ipaddr, 0, sizeof(ipaddr));
+    ipaddr.sin_family = AF_INET;
+    ipaddr.sin_port = htons(_port);
+    ipaddr.sin_addr.s_addr = inet_addr(_ip);
+    int sock = fileno(IoObject_AsFILE(Object_BASE(self)));
+    if(bind(sock, (struct sockaddr *)&ipaddr, sizeof(ipaddr)) < 0) {
+        fprintf(stderr, "Socket Bind Fail !!!\n");
+        exit(1);
+    }
+    if(listen(sock, 1000) < 0) {
+        fprintf(stderr, "Socket Listen Fail !!!\n");
+        exit(1);
+    }
     return Object_NULL;
 }
 
 static Object *sock_method_accept(Object *self, Object *args) {
-    return Object_NULL;
+    int sock = fileno(IoObject_AsFILE(Object_BASE(self)));
+    struct sockaddr_in client_addr;
+    socklen_t length = sizeof(client_addr);
+    int conn = accept(sock, (struct sockaddr *)&client_addr, &length);
+    if(conn < 0) {
+        fprintf(stderr, "Socket Accept Fail !!!\n");
+        exit(1);
+    }
+    FILE *fsio = fdopen(conn, "r+");
+    Object *sio = Object_Malloc(&Sock_Type, sizeof(SockObject));
+    Object_Extend(sio, &Io_Type, sizeof(IoObject));
+    Object_Init(Object_BASE(sio), Object_CONVERT(fsio));
+    SockObject_IP(sio) = StrObject_FromStr(inet_ntoa(client_addr.sin_addr));
+    SockObject_PORT(sio) = IntObject_FromInt(client_addr.sin_port);
+    return sio;
+}
+
+static Object *sock_method_read(Object *self, Object *args) {
+    assert(IntObject_CHECK(args));
+    int size = IntObject_AsINT(args);
+    char *buf = (char *)malloc(size);
+    int sock = fileno(IoObject_AsFILE(Object_BASE(self)));
+    int rsize = recv(sock, buf, size, 0);
+    Object *_s = StrObject_FromStrAndSize(buf, rsize);
+    free(buf);
+    return _s;
 }
 
 static MethodDef sock_methods[] = {
     {"Connect", sock_method_connect},
     {"Listen", sock_method_listen},
     {"Accept", sock_method_accept},
+    {"Read", sock_method_read},
     {Object_NULL, Object_NULL}
 };
 
@@ -49,18 +93,15 @@ static int sock_init(Object *self, Object *args) {
     Object_INCREF(ip);
     SockObject_PORT(self) = port;
     Object_INCREF(port);
-    int sock = socket(AF_INET,SOCK_STREAM, 0);
+    int sock = socket(AF_INET, SOCK_STREAM, 0);
     FILE *fsock = fdopen(sock, "r+");
     Object_Init(Object_BASE(self), Object_CONVERT(fsock));
     return Object_OK;
 }
 
 static int sock_deinit(Object *self) {
-    printf("sock_deinit...\n");
     Object_DECREF(SockObject_IP(self));
-    printf("sock_deinit...ip\n");
     Object_DECREF(SockObject_PORT(self));
-    printf("sock_deinit...port\n");
     return Object_Deinit(Object_BASE(self));
 }
 

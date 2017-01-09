@@ -3,8 +3,8 @@
 static Object *io_method_read(Object *self, Object *ob) {
     assert(IntObject_CHECK(ob));
     int size = IntObject_AsINT(ob);
-    char *buf = (char *)malloc((size + 1) * sizeof(char));
-    int rsize = (size_t)fread(buf, sizeof(char), size, IoObject_VALUE(self));
+    char *buf = (char *)malloc(size * sizeof(char));
+    int rsize = fread(buf, sizeof(char), size, IoObject_VALUE(self));
     Object *_s = StrObject_FromStrAndSize(buf, rsize);
     free(buf);
     return _s;
