@@ -6,16 +6,16 @@ extern "C" {
 
 typedef struct _sockobject {
     Object_HEAD
-    Object *ip;
-    Object *port;
+    Object *ob_ip;
+    Object *ob_port;
 } SockObject;
 
 extern TypeObject Sock_Type;
 
 #define SockObject_CHECK(ob) Object_CHECK(ob, &Sock_Type)
 #define SockObject_CONVERT(ob) ((SockObject *)ob)
-#define SockObject_IP(ob) SockObject_CONVERT(ob)->ip
-#define SockObject_PORT(ob) SockObject_CONVERT(ob)->port
+#define SockObject_IP(ob) SockObject_CONVERT(ob)->ob_ip
+#define SockObject_PORT(ob) SockObject_CONVERT(ob)->ob_port
 
 Object *SockObject_Open(Object *, Object *);
 
