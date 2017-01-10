@@ -1,9 +1,5 @@
 #include "object.h"
 
-static Object *thread_methods_run(Object *self, Object *args) {
-    return Object_NULL;
-}
-
 static Object *thread_methods_detach(Object *self, Object *args) {
     pthread_detach(ThreadObject_TID(self));
     return Object_NULL;
@@ -16,7 +12,6 @@ static Object *thread_methods_join(Object *self, Object *args) {
 }
 
 static MethodDef thread_methods[] = {
-    {"Run", thread_methods_run},
     {"Detach", thread_methods_detach},
     {"Join", thread_methods_join},
     {Object_NULL, Object_NULL}
@@ -30,8 +25,8 @@ static void *thread_run(void *ptr) {
     Object_DECREF(_i0);
     Object *_i1 = IntObject_FromInt(1);
     Object *args = Object_CallMethod(_lst, "Get", _i1);
+    Object *ret = ThreadObject_CALLBACK(self)(self, args);
     Object_DECREF(_i1);
-    Object *ret = Object_CallMethod(self, "Run", args);
     Object_DECREF(_lst);
     return ret;
 }
@@ -76,8 +71,9 @@ TypeObject Thread_Type = {
     .tp_methods = thread_methods
 };
 
-Object *ThreadObject_New(Object *args) {
+Object *ThreadObject_New(thread_callback callback, Object *args) {
     Object *_thread = Object_Malloc(&Thread_Type, sizeof(ThreadObject));
+    ThreadObject_CALLBACK(_thread) = callback;
     Object_Init(_thread, args);
     return _thread;
 }
