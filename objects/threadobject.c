@@ -34,7 +34,9 @@ static void *thread_run(void *ptr) {
 static int thread_init(Object *self, Object *args) {
     Object_Extend(self, &Object_Type, sizeof(Object));
     Object_Init(Object_BASE(self), Object_NULL);
-    Object *_lst = ListObject_New(2);
+    Object *_size = IntObject_FromInt(2);
+    Object *_lst = ListObject_New(_size);
+    Object_DECREF(_size);
     Object_CallMethod(_lst, "Append", self);
     Object_CallMethod(_lst, "Append", args);
     int ret = pthread_create(&(ThreadObject_TID(self)), NULL, thread_run, (void *)_lst);

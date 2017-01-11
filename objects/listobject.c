@@ -90,7 +90,9 @@ static Object *list_method_slice(Object *self, Object *args) {
     if(start < 0 || end < 0 || start > end) {
         return Object_NULL;
     }
-    Object *_lst = ListObject_New((int)(end - start));
+    Object *_size = IntObject_FromInt((int)(end - start));
+    Object *_lst = ListObject_New(_size);
+    Object_DECREF(_size);
     Object *item = Object_NULL;
     Object *index = Object_NULL;
     int i = start;
@@ -125,7 +127,9 @@ static Object *list_method_map(Object *self, Object *func) {
     Object *item = Object_NULL;
     Object *_item = Object_NULL;
     list_item_map_cb callback = (list_item_map_cb)func;
-    Object *_lst = ListObject_New(ListObject_SIZE(self));
+    Object *_size = IntObject_FromInt(ListObject_SIZE(self));
+    Object *_lst = ListObject_New(_size);
+    Object_DECREF(_size);
     int i = 0;
     for(;i < ListObject_SIZE(self); i++) {
         index = IntObject_FromInt(i);
@@ -142,7 +146,9 @@ static Object *list_method_filter(Object *self, Object *func) {
     Object *index = Object_NULL;
     Object *item = Object_NULL;
     list_item_filter_cb callback = (list_item_filter_cb)func;
-    Object *_lst = ListObject_New(ListObject_SIZE(self));
+    Object *_size = IntObject_FromInt(ListObject_SIZE(self));
+    Object *_lst = ListObject_New(_size);
+    Object_DECREF(_size);
     int i = 0, ret = FALSE;
     for(;i < ListObject_SIZE(self); i++) {
         index = IntObject_FromInt(i);
@@ -170,6 +176,7 @@ static MethodDef list_methods[] = {
 static int list_init(Object *self, Object *args) {
     Object_Extend(self, &Object_Type, sizeof(Object));
     Object_Init(Object_BASE(self), Object_NULL);
+    assert(IntObject_CHECK(args));
     int size = IntObject_AsINT(args);
     ListObject_VALUE(self) = Object_NULL;
     ListObject_SIZE(self) = 0L;
@@ -246,10 +253,8 @@ TypeObject List_Type = {
     .tp_methods = list_methods
 };
 
-Object *ListObject_New(size_t size) {
+Object *ListObject_New(Object *size) {
     Object *_lst = Object_Malloc(&List_Type, sizeof(ListObject));
-    Object *i = IntObject_FromInt((int)size);
-    Object_Init(_lst, i);
-    Object_DECREF(i);
+    Object_Init(_lst, size);
     return _lst;
 }

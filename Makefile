@@ -1,6 +1,6 @@
 objects = main.o object.o intobject.o longobject.o floatobject.o doubleobject.o \
 strobject.o listobject.o ioobject.o stdinobject.o stdoutobject.o stderrobject.o \
-fileobject.o sockobject.o threadobject.o
+fileobject.o sockobject.o threadobject.o threadpoolobject.o
 
 main: $(objects)
 	gcc -o main $(objects) -lpthread
@@ -35,6 +35,8 @@ sockobject.o: objects/sockobject.c includes/object.h
 	gcc -c objects/sockobject.c -I includes
 threadobject.o: objects/threadobject.c includes/object.h
 	gcc -c objects/threadobject.c -I includes
+threadpoolobject.o: objects/threadpoolobject.c includes/object.h
+	gcc -c objects/threadpoolobject.c -I includes
 
 .PHONY: clean
 clean:

@@ -65,7 +65,9 @@ TypeObject File_Type = {
 
 Object *FileObject_Open(Object *filename, Object *mode) {
     Object *_io = Object_Malloc(&File_Type, sizeof(FileObject));
-    Object *_lst = ListObject_New(2);
+    Object *_size = IntObject_FromInt(2);
+    Object *_lst = ListObject_New(_size);
+    Object_DECREF(_size);
     Object_CallMethod(_lst, "Append", filename);
     Object_CallMethod(_lst, "Append", mode);
     Object_Init(_io, _lst);

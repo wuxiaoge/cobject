@@ -129,7 +129,9 @@ TypeObject Sock_Type = {
 
 Object *SockObject_Open(Object *ip, Object *port) {
     Object *_sock = Object_Malloc(&Sock_Type, sizeof(SockObject));
-    Object *_lst= ListObject_New(2);
+    Object *_size = IntObject_FromInt(2);
+    Object *_lst= ListObject_New(_size);
+    Object_DECREF(_size);
     Object_CallMethod(_lst, "Append", ip);
     Object_CallMethod(_lst, "Append", port);
     Object_Init(_sock, _lst);
