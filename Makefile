@@ -35,8 +35,8 @@ sockobject.o: objects/sockobject.c includes/object.h
 	gcc -c objects/sockobject.c -I includes
 threadobject.o: objects/threadobject.c includes/object.h
 	gcc -c objects/threadobject.c -I includes
-threadpoolobject.o: objects/threadpoolobject.c includes/object.h
-	gcc -c objects/threadpoolobject.c -I includes
+threadpoolobject.o: modules/threadpoolobject.c includes/object.h
+	gcc -c modules/threadpoolobject.c -I includes
 
 .PHONY: clean
 clean:

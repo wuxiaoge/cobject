@@ -116,6 +116,5 @@ void Object_Free(Object **);
 #include "fileobject.h"
 #include "sockobject.h"
 #include "threadobject.h"
-#include "threadpoolobject.h"
 
 

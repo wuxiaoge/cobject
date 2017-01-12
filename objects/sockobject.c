@@ -32,7 +32,10 @@ static Object *sock_method_listen(Object *self, Object *args) {
     ipaddr.sin_port = htons(_port);
     ipaddr.sin_addr.s_addr = inet_addr(_ip);
     int sock = fileno(IoObject_AsFILE(Object_BASE(self)));
-    if(bind(sock, (struct sockaddr *)&ipaddr, sizeof(ipaddr)) < 0) {
+    int on = 1;
+    setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
+    int res = bind(sock, (struct sockaddr *)&ipaddr, sizeof(ipaddr));
+    if(res < 0) {
         fprintf(stderr, "Socket Bind Fail !!!\n");
         exit(1);
     }

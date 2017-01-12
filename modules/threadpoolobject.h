@@ -32,9 +32,10 @@ extern TypeObject ThreadPool_Type;
 #define ThreadPoolObject_LOOP(ob) ThreadPoolObject_CONVERT(ob)->ob_loop
 #define ThreadPoolObject_TASK(ob) ThreadPoolObject_CONVERT(ob)->ob_task
 
-Object *ThreadPoolObject_New(Object *, int);
+Object *ThreadPoolObject_New(Object *, BOOL);
 
 #ifdef __cplusplus
 }
 #endif
 #endif
+

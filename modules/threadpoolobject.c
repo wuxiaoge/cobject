@@ -1,5 +1,7 @@
 #include "object.h"
+#include "threadpoolobject.h"
 #include <pthread.h>
+#include <unistd.h>
 
 static int threads_foreach_detach(Object *index, Object *item) {
     pthread_detach(ThreadObject_TID(item));
@@ -34,7 +36,6 @@ static Object *threadpool_methods_add(Object *self, Object *ob) {
     job->jb_ob = ob;
     Object_INCREF(ob);
     pthread_mutex_lock(&(task->th_lock));
-    printf("pool start ...\n");
     if(task->th_end) {
         task->th_end->jb_next = job;
         task->th_end = job;
@@ -42,7 +43,6 @@ static Object *threadpool_methods_add(Object *self, Object *ob) {
         task->th_start = job;
         task->th_end = task->th_start;
     }
-    printf("pool end ...\n");
     pthread_mutex_unlock(&(task->th_lock));
     return Object_NULL;
 }
@@ -67,8 +67,8 @@ static Object *threadpool_callback(Object *thread, Object *args) {
     struct _job *job = NULL;
     Object *ret = Object_NULL;
     do {
-        pthread_mutex_lock(&(task->th_lock));
-        printf("start thread : %d\n", ithread_idx);
+        int _status = pthread_mutex_trylock(&(task->th_lock));
+        if(_status) {continue;}
         job = task->th_start;
         if(job) {
             if(job == task->th_end) {
@@ -78,9 +78,9 @@ static Object *threadpool_callback(Object *thread, Object *args) {
                 task->th_start = job->jb_next;
             }
         }
-        printf("end thread : %d\n", ithread_idx);
         pthread_mutex_unlock(&(task->th_lock));
         if(job) {
+            printf("thread %d : ==>\n", ithread_idx);
             ret = Object_CallMethod(job->jb_ob, "Run", Object_NULL);
             if(!ThreadPoolObject_LOOP(pool)) {
                 Object_DECREF(ret);
@@ -107,6 +107,9 @@ static int threadpool_init(Object *self, Object *args) {
     ThreadPoolObject_THREADS(self) = lst;
     ThreadPoolObject_LOOP(self) = IntObject_AsINT(loop);
     int isize = IntObject_AsINT(size);
+    if(isize < 1) {
+        isize = sysconf(_SC_NPROCESSORS_ONLN);
+    }
     ThreadPoolObject_TASK(self) = (struct _task **)malloc(sizeof(struct _task *) * isize);
     Object *thread = Object_NULL;
     Object *_args = Object_NULL;
@@ -182,7 +185,7 @@ TypeObject ThreadPool_Type = {
     .tp_methods = threadpool_methods
 };
 
-Object *ThreadPoolObject_New(Object *pool_size, int loop) {
+Object *ThreadPoolObject_New(Object *pool_size, BOOL loop) {
     Object *_threadpool = Object_Malloc(&ThreadPool_Type, sizeof(ThreadPoolObject));
     Object *two = IntObject_FromInt(2);
     Object *lst = ListObject_New(two);
