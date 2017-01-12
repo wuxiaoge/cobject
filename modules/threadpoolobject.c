@@ -30,7 +30,7 @@ static Object *threadpool_methods_add(Object *self, Object *ob) {
     static int _task_index = 0;
     assert(ob);
     struct _task *task = *(ThreadPoolObject_TASK(self) + _task_index);
-    _task_index = (++_task_index) % ListObject_SIZE(ThreadPoolObject_THREADS(self));
+    _task_index = (_task_index + 1) % ListObject_SIZE(ThreadPoolObject_THREADS(self));
     struct _job *job = (struct _job *)malloc(sizeof(struct _job));
     job->jb_next = NULL;
     job->jb_ob = ob;
@@ -68,7 +68,7 @@ static Object *threadpool_callback(Object *thread, Object *args) {
     Object *ret = Object_NULL;
     do {
         int _status = pthread_mutex_trylock(&(task->th_lock));
-        if(_status) {continue;}
+        if(_status) continue;
         job = task->th_start;
         if(job) {
             if(job == task->th_end) {
@@ -149,7 +149,6 @@ static int threadpool_deinit(Object *self) {
     for(; i < isize; i++) {
         task = *(ThreadPoolObject_TASK(self) + i);
         job = task->th_start;
-        tmp = NULL;
         while(job) {
             tmp = job->jb_next;
             Object_DECREF(job->jb_ob);
