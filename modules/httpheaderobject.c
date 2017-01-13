@@ -62,7 +62,6 @@ static int httpheader_init(Object *self, Object *args) {
     Object_Init(Object_BASE(self), Object_NULL);
     HttpHeaderObject_ITEMS(self) = NULL;
     if(!(args && StrObject_CHECK(args))) return Object_OK;
-    int i = 0;
     Object *index = Object_NULL;
     Object *item = Object_NULL;
     Object *colon = StrObject_FromStr(": ");
@@ -70,9 +69,7 @@ static int httpheader_init(Object *self, Object *args) {
     Object *res = Object_CallMethod(args, "Split", newline);
     Object_DECREF(newline);
     Object *lst = Object_NULL;
-    Object *_i0 = IntObject_FromInt(0);
-    Object *_i1 = IntObject_FromInt(1);
-    Object *out = StdoutObject_New();
+    int i = 0;
     for(; i < ListObject_SIZE(res); i++) {
         index = IntObject_FromInt(i);
         item = Object_CallMethod(res, "Get", index);
@@ -83,10 +80,7 @@ static int httpheader_init(Object *self, Object *args) {
         }
         Object_DECREF(lst);
     }
-    Object_DECREF(_i0);
-    Object_DECREF(_i1);
     Object_DECREF(colon);
-    Object_DECREF(out);
     Object_DECREF(res);
     return Object_OK;
 }
