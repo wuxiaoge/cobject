@@ -22,6 +22,7 @@ static Object *sock_method_connect(Object *self, Object *args) {
 }
 
 static Object *sock_method_listen(Object *self, Object *args) {
+    assert(args && IntObject_CHECK(args));
     Object *ip = SockObject_IP(self);
     Object *port = SockObject_PORT(self);
     const char *_ip = StrObject_AsSTR(ip);
@@ -39,7 +40,8 @@ static Object *sock_method_listen(Object *self, Object *args) {
         fprintf(stderr, "Socket Bind Fail !!!\n");
         exit(1);
     }
-    if(listen(sock, 1000) < 0) {
+    int queue_size = IntObject_AsINT(args);
+    if(listen(sock, queue_size ? queue_size : 1000) < 0) {
         fprintf(stderr, "Socket Listen Fail !!!\n");
         exit(1);
     }

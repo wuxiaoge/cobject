@@ -13,13 +13,18 @@ static Object *str_method_concat(Object *self, Object *ob) {
 }
 
 static Object *str_method_substr(Object *self, Object *args) {
-    assert(ListObject_CHECK(args));
-    Object *ostart = ListObject_GetITEM(args, 0);
-    Object *oend = ListObject_GetITEM(args, 1);
-    int start = IntObject_AsINT(ostart);
-    int end = IntObject_AsINT(oend);
+    int start, end;
     size_t ssize = StrObject_SIZE(self);
     if(!ssize) {
+        return Object_NULL;
+    }
+    if(ListObject_CHECK(args)){
+        start = IntObject_AsINT(ListObject_GetITEM(args, 0));
+        end = IntObject_AsINT(ListObject_GetITEM(args, 1));
+    } else if(IntObject_CHECK(args)) {
+        start = IntObject_AsINT(args);
+        end = ssize;
+    } else {
         return Object_NULL;
     }
     if(start < 0) {
@@ -50,15 +55,32 @@ static Object *str_method_index(Object *self, Object *ob) {
     return IntObject_FromInt(index);
 }
 
-static Object *str_method_format(Object *self, Object *args) {
-    return Object_NULL;
+static Object *str_method_split(Object *self, Object *ob) {
+    assert(StrObject_CHECK(ob));
+    const char *start = StrObject_AsSTR(self);
+    const char *end = NULL;
+    Object *size = IntObject_FromInt(1);
+    Object *_lst = ListObject_New(size);
+    Object_DECREF(size);
+    Object *sub = Object_NULL;
+    do {
+        end = strstr(start, StrObject_AsSTR(ob));
+        if(end) {
+            sub = StrObject_FromStrAndSize(start, end - start);
+            start = (const char *)(end + StrObject_SIZE(ob));
+        } else {
+            sub = StrObject_FromStrAndSize(start, StrObject_AsSTR(self) + StrObject_SIZE(self) - start);
+        }
+        Object_CallMethod(_lst, "Append", sub);
+    } while(end);
+    return _lst;
 }
 
 static MethodDef str_methods[] = {
     {"Concat", str_method_concat},
     {"Substr", str_method_substr},
     {"Index", str_method_index},
-    {"Format", str_method_format},
+    {"Split", str_method_split},
     {Object_NULL, Object_NULL}
 };
 
