@@ -6,6 +6,7 @@ static Object *keyvalue_method_add(Object *self, Object *args) {
     Object *_i0 = IntObject_FromInt(0);
     Object *key = Object_CallMethod(args, "Get", _i0);
     Object_DECREF(_i0);
+    if(!StrObject_SIZE(key)) return Object_NULL;
     Object *_i1 = IntObject_FromInt(1);
     Object *value = Object_CallMethod(args, "Get", _i1);
     Object_DECREF(_i1);

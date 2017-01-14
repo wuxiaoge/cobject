@@ -176,6 +176,7 @@ static Object *list_method_clear(Object *self, Object *args) {
     }
     ListObject_SIZE(self) = 0;
     memset(ListObject_VALUE(self), 0, size);
+    return Object_NULL;
 }
 
 static MethodDef list_methods[] = {

@@ -42,17 +42,24 @@ static int httprequest_init(Object *self, Object *args) {
     arg_lst = Object_CallMethod(arg_lst, "Split", and);
     Object *arg_item = Object_NULL;
     Object *index = Object_NULL;
+    Object *empty = StrObject_FromStr("");
     int i = 0;
     if(ListObject_SIZE(arg_lst)) {
         for(; i < ListObject_SIZE(arg_lst); i++) {
             index = IntObject_FromInt(i);
             arg_item = Object_CallMethod(arg_lst, "Get", index);
             arg_item = Object_CallMethod(arg_item, "Split", eq);
-            Object_CallMethod(HttpRequestObject_ARGUMENTS(self), "Add", arg_item);
+            if(ListObject_SIZE(arg_item) == 1) {
+                Object_CallMethod(arg_item, "Append", empty);
+                Object_CallMethod(HttpRequestObject_ARGUMENTS(self), "Add", arg_item);
+            } else if(ListObject_SIZE(arg_item) == 2) {
+                Object_CallMethod(HttpRequestObject_ARGUMENTS(self), "Add", arg_item);
+            }
             Object_DECREF(arg_item);
             Object_DECREF(index);
         }
     }
+    Object_DECREF(empty);
     Object_DECREF(arg_lst);
     Object_DECREF(eq);
     Object_DECREF(and);
@@ -91,6 +98,10 @@ static int httprequest_init(Object *self, Object *args) {
     Object_DECREF(_i0);
     Object_DECREF(_i1);
     Object_DECREF(_i2);
+
+    Object *out = StdoutObject_New();
+    Object_CallMethod(out, "Writeline", HttpRequestObject_ARGUMENTS(self));
+    Object_DECREF(out);
     return Object_OK;
 }
 
