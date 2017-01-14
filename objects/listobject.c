@@ -51,7 +51,8 @@ static Object *list_method_remove(Object *self, Object *ob) {
     Object *item = Object_NULL;
     Object *index = Object_NULL;
     int i = 0;
-    for(; i < ListObject_SIZE(self); i++) {
+    int size = ListObject_SIZE(self);
+    for(; i < size; i++) {
         index = IntObject_FromInt(i);
         item = list_method_get(self, index);
         Object_DECREF(index);
@@ -162,6 +163,21 @@ static Object *list_method_filter(Object *self, Object *func) {
     return _lst;
 }
 
+static Object *list_method_clear(Object *self, Object *args) {
+    Object *item = Object_NULL;
+    Object *index = Object_NULL;
+    int i = 0;
+    int size = ListObject_SIZE(self);
+    for(; i < size; i++) {
+        index = IntObject_FromInt(i);
+        item = list_method_get(self, index);
+        Object_DECREF(index);
+        Object_DECREF(item);
+    }
+    ListObject_SIZE(self) = 0;
+    memset(ListObject_VALUE(self), 0, size);
+}
+
 static MethodDef list_methods[] = {
     {"Append", list_method_append},
     {"Remove", list_method_remove},
@@ -170,6 +186,7 @@ static MethodDef list_methods[] = {
     {"Foreach", list_method_foreach},
     {"Map", list_method_map},
     {"Filter", list_method_filter},
+    {"Clear", list_method_clear},
     {Object_NULL, Object_NULL}
 };
 
@@ -198,7 +215,7 @@ static int list_deinit(Object *self) {
         }
         free(ListObject_VALUE(self));
     }
-    return Object_OK;
+    return Object_Deinit(Object_BASE(self));
 }
 
 static long list_hash(Object *self) {

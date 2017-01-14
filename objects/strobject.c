@@ -15,8 +15,9 @@ static Object *str_method_concat(Object *self, Object *ob) {
 static Object *str_method_substr(Object *self, Object *args) {
     int start, end;
     size_t ssize = StrObject_SIZE(self);
+    Object *empty = StrObject_FromStr("");
     if(!ssize) {
-        return Object_NULL;
+        return empty;
     }
     if(ListObject_CHECK(args)){
         start = IntObject_AsINT(ListObject_GetITEM(args, 0));
@@ -25,13 +26,13 @@ static Object *str_method_substr(Object *self, Object *args) {
         start = IntObject_AsINT(args);
         end = ssize;
     } else {
-        return Object_NULL;
+        return empty;
     }
     if(start < 0) {
         start = ssize + start;
     }
     if(start >= ssize) {
-        return Object_NULL;
+        return empty;
     }
     if(end < 0) {
         end = ssize + end;
@@ -40,8 +41,9 @@ static Object *str_method_substr(Object *self, Object *args) {
         end = ssize;
     }
     if(start < 0 || end < 0 || start > end) {
-        return Object_NULL;
+        return empty;
     }
+    Object_DECREF(empty);
     return StrObject_FromStrAndSize(StrObject_AsSTR(self) + start, end - start);
 }
 
