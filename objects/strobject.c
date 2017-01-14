@@ -72,6 +72,7 @@ static Object *str_method_split(Object *self, Object *ob) {
             sub = StrObject_FromStrAndSize(start, StrObject_AsSTR(self) + StrObject_SIZE(self) - start);
         }
         Object_CallMethod(_lst, "Append", sub);
+        Object_DECREF(sub);
     } while(end);
     return _lst;
 }
