@@ -5,7 +5,7 @@
 int main(int argc, char *args[]) {
     Object *out = StdoutObject_New();
     Object *size = IntObject_FromInt(2);
-    Object *hs = StrObject_FromStr("Server: LQS/1.0\r\nAccept: */*\r\n");
+    Object *hs = StrObject_FromStr("Server: LQS/1.0\r\nAccept: */*\r\nContent-Type: text/html\r\n");
     Object *header = HttpHeaderObject_New(hs);
     Object_DECREF(hs);
 
