@@ -7,100 +7,121 @@ static MethodDef httprequest_methods[] = {
     {Object_NULL, Object_NULL}
 };
 
-static int httprequest_init(Object *self, Object *args) {
-    assert(StrObject_CHECK(args));
-    Object_Extend(self, &Object_Type, sizeof(Object));
-    Object_Init(Object_BASE(self), Object_NULL);
-    HttpRequestObject_ARGUMENTS(self) = KeyValueObject_New();
+static Object *httprequest_build_request_method(Object *self, Object *content) {
+    Object *newline = StrObject_FromStr("\r\n");
+    Object *start = IntObject_FromInt(0);
+    Object *idx = Object_CallMethod(content, "Index", newline);
     Object *size = IntObject_FromInt(2);
     Object *lst = ListObject_New(size);
-    Object *start = IntObject_FromInt(0);
-    Object *newline = StrObject_FromStr("\r\n");
-    Object *idx = Object_CallMethod(args, "Index", newline);
-    Object_DECREF(newline);
     Object_CallMethod(lst, "Append", start);
     Object_CallMethod(lst, "Append", idx);
-    Object *req_method = Object_CallMethod(args, "Substr", lst);
+    Object *substr = Object_CallMethod(content, "Substr", lst);
+    Object_DECREF(newline);
+    Object_DECREF(lst);
+    Object_DECREF(start);
+    start = Object_CallMethod(idx, "Add", size);
+    Object_DECREF(idx);
+    Object_DECREF(size);
     Object *space = StrObject_FromStr(" ");
-    Object *params = Object_CallMethod(req_method, "Split", space);
-    Object_DECREF(space);
-    Object_DECREF(req_method);
     Object *_i0 = IntObject_FromInt(0);
     Object *_i1 = IntObject_FromInt(1);
     Object *_i2 = IntObject_FromInt(2);
-    HttpRequestObject_METHOD(self) = Object_CallMethod(params, "Get", _i0);
+    lst = Object_CallMethod(substr, "Split", space);
+    Object_DECREF(substr);
+    Object_DECREF(space);
+    // 获取请求方式
+    HttpRequestObject_METHOD(self) = Object_CallMethod(lst, "Get", _i0);
     Object_INCREF(HttpRequestObject_METHOD(self));
-    Object *url_args = Object_CallMethod(params, "Get", _i1);
-    Object *question = StrObject_FromStr("?");
-    url_args = Object_CallMethod(url_args, "Split", question);
-    Object_DECREF(question);
-    HttpRequestObject_URL(self) = Object_CallMethod(url_args, "Get", _i0);
-    Object_INCREF(HttpRequestObject_URL(self));
+    // 获取请求URL
+    Object *qst = StrObject_FromStr("?");
     Object *and = StrObject_FromStr("&");
     Object *eq = StrObject_FromStr("=");
-    Object *arg_lst = Object_CallMethod(url_args, "Get", _i1);
-    arg_lst = Object_CallMethod(arg_lst, "Split", and);
+    Object *empty = StrObject_FromStr("");
+    Object *url_args = Object_CallMethod(Object_CallMethod(lst, "Get", _i1), "Split", qst);
+    HttpRequestObject_URL(self) = Object_CallMethod(url_args, "Get", _i0);
+    Object_INCREF(HttpRequestObject_URL(self));
+    Object *arg_lst = Object_CallMethod(Object_CallMethod(url_args, "Get", _i1), "Split", and);
     Object *arg_item = Object_NULL;
     Object *index = Object_NULL;
-    Object *empty = StrObject_FromStr("");
+    HttpRequestObject_ARGUMENTS(self) = KeyValueObject_New();
     int i = 0;
-    if(ListObject_SIZE(arg_lst)) {
-        for(; i < ListObject_SIZE(arg_lst); i++) {
-            index = IntObject_FromInt(i);
-            arg_item = Object_CallMethod(arg_lst, "Get", index);
-            arg_item = Object_CallMethod(arg_item, "Split", eq);
-            if(ListObject_SIZE(arg_item) == 1) {
-                Object_CallMethod(arg_item, "Append", empty);
-                Object_CallMethod(HttpRequestObject_ARGUMENTS(self), "Add", arg_item);
-            } else if(ListObject_SIZE(arg_item) == 2) {
-                Object_CallMethod(HttpRequestObject_ARGUMENTS(self), "Add", arg_item);
-            }
-            Object_DECREF(arg_item);
-            Object_DECREF(index);
+    for(; i < ListObject_SIZE(arg_lst); i++) {
+        index = IntObject_FromInt(i);
+        arg_item = Object_CallMethod(Object_CallMethod(arg_lst, "Get", index), "Split", eq);
+        if(ListObject_SIZE(arg_item)==1) {
+            Object_CallMethod(arg_item, "Append", empty);
+            Object_CallMethod(HttpRequestObject_ARGUMENTS(self), "Add", arg_item);
+        } else if(ListObject_SIZE(arg_item)==2) {
+            Object_CallMethod(HttpRequestObject_ARGUMENTS(self), "Add", arg_item);
         }
+        Object_DECREF(index);
+        Object_DECREF(arg_item);
     }
-    Object_DECREF(empty);
     Object_DECREF(arg_lst);
-    Object_DECREF(eq);
-    Object_DECREF(and);
     Object_DECREF(url_args);
-    Object *protocol_version = Object_CallMethod(params, "Get", _i2);
+    Object_DECREF(qst);
+    Object_DECREF(and);
+    Object_DECREF(eq);
+    Object_DECREF(empty);
+    // 获取协议与版本
     Object *line = StrObject_FromStr("/");
-    Object *pv_lst = Object_CallMethod(protocol_version, "Split", line);
-    Object_DECREF(line);
+    Object *pv_lst = Object_CallMethod(Object_CallMethod(lst, "Get", _i2), "Split", line);
     HttpRequestObject_PROTOCOL(self) = Object_CallMethod(pv_lst, "Get", _i0);
     Object_INCREF(HttpRequestObject_PROTOCOL(self));
     HttpRequestObject_VERSION(self) = Object_CallMethod(pv_lst, "Get", _i1);
     Object_INCREF(HttpRequestObject_VERSION(self));
     Object_DECREF(pv_lst);
-    Object_DECREF(params);
-    Object_DECREF(start);
-    Object_DECREF(idx);
-    start = Object_CallMethod(idx, "Add", size);
-    Object *new2line = StrObject_FromStr("\r\n\r\n");
-    idx = Object_CallMethod(args, "Index", new2line);
-    Object_DECREF(new2line);
-    Object_CallMethod(lst, "Clear", Object_NULL);
-    Object_CallMethod(lst, "Append", start);
-    Object_CallMethod(lst, "Append", idx);
-    Object *substr = Object_CallMethod(args, "Substr", lst);
-    HttpRequestObject_HEADERS(self) = HttpHeaderObject_New(substr);
-    Object_DECREF(substr);
-    Object_DECREF(start);
-    Object *_i4 = IntObject_FromInt(4);
-    start = Object_CallMethod(idx, "Add", _i4);
-    Object_DECREF(idx);
-    Object_DECREF(_i4);
-    HttpRequestObject_BODY(self) = Object_CallMethod(args, "Substr", start);
-    Object_DECREF(start);
-    Object_DECREF(size);
+    Object_DECREF(line);
+
     Object_DECREF(lst);
     Object_DECREF(_i0);
     Object_DECREF(_i1);
     Object_DECREF(_i2);
+    return start;
+}
 
+static Object *httprequest_build_request_header(Object *self, Object *start, Object *content) {
+    Object *size = IntObject_FromInt(2);
+    Object *len = IntObject_FromInt(4);
+    Object *new2line = StrObject_FromStr("\r\n\r\n");
+    Object *idx = Object_CallMethod(content, "Index", new2line);
+    Object_DECREF(new2line);
+    Object *lst = ListObject_New(size);
+    Object_DECREF(size);
+    Object_CallMethod(lst, "Append", start);
+    Object_CallMethod(lst, "Append", idx);
+    Object *substr = Object_CallMethod(content, "Substr", lst);
+    HttpRequestObject_HEADERS(self) = HttpHeaderObject_New(substr);
+    start = Object_CallMethod(idx, "Add", len);
+    Object_DECREF(idx);
+    Object_DECREF(len);
+    Object_DECREF(substr);
+    Object_DECREF(lst);
+    return start;
+}
+
+static Object *httprequest_build_request_body(Object *self, Object *start, Object *content) {
+    HttpRequestObject_BODY(self) = Object_CallMethod(content, "Substr", start);
+    return Object_NULL;
+}
+
+static int httprequest_init(Object *self, Object *args) {
+    assert(StrObject_CHECK(args));
+    Object_Extend(self, &Object_Type, sizeof(Object));
+    Object_Init(Object_BASE(self), Object_NULL);
+    Object *start = httprequest_build_request_method(self, args);
+    Object *start2  = httprequest_build_request_header(self, start, args);
+    httprequest_build_request_body(self, start2, args);
+    Object_DECREF(start);
+    Object_DECREF(start2);
     Object *out = StdoutObject_New();
+    Object_CallMethod(out, "Writeline", HttpRequestObject_METHOD(self));
+    Object_CallMethod(out, "Writeline", HttpRequestObject_URL(self));
     Object_CallMethod(out, "Writeline", HttpRequestObject_ARGUMENTS(self));
+    Object_CallMethod(out, "Writeline", HttpRequestObject_PROTOCOL(self));
+    Object_CallMethod(out, "Writeline", HttpRequestObject_VERSION(self));
+    Object_CallMethod(out, "Writeline", HttpRequestObject_HEADERS(self));
+    Object_CallMethod(out, "Writeline", HttpRequestObject_BODY(self));
     Object_DECREF(out);
     return Object_OK;
 }
