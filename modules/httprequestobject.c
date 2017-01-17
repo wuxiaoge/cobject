@@ -7,6 +7,34 @@ static MethodDef httprequest_methods[] = {
     {Object_NULL, Object_NULL}
 };
 
+static Object *httprequest_build_request_argument(Object *self, Object *arguments) {
+    assert(arguments && StrObject_CHECK(arguments));
+    Object *and = StrObject_FromStr("&");
+    Object *eq = StrObject_FromStr("=");
+    Object *empty = StrObject_FromStr("");
+    Object *arg_lst = Object_CallMethod(arguments, "Split", and);
+    Object *arg_item = Object_NULL;
+    Object *index = Object_NULL;
+    int i = 0;
+    for(; i < ListObject_SIZE(arg_lst); i++) {
+        index = IntObject_FromInt(i);
+        arg_item = Object_CallMethod(Object_CallMethod(arg_lst, "Get", index), "Split", eq);
+        if(ListObject_SIZE(arg_item)==1) {
+            Object_CallMethod(arg_item, "Append", empty);
+            Object_CallMethod(HttpRequestObject_ARGUMENTS(self), "Add", arg_item);
+        } else if(ListObject_SIZE(arg_item)==2) {
+            Object_CallMethod(HttpRequestObject_ARGUMENTS(self), "Add", arg_item);
+        }
+        Object_DECREF(index);
+        Object_DECREF(arg_item);
+    }
+    Object_DECREF(and);
+    Object_DECREF(eq);
+    Object_DECREF(empty);
+    Object_DECREF(arg_lst);
+    return Object_NULL;
+}
+
 static Object *httprequest_build_request_method(Object *self, Object *content) {
     Object *newline = StrObject_FromStr("\r\n");
     Object *start = IntObject_FromInt(0);
@@ -34,35 +62,13 @@ static Object *httprequest_build_request_method(Object *self, Object *content) {
     Object_INCREF(HttpRequestObject_METHOD(self));
     // 获取请求URL
     Object *qst = StrObject_FromStr("?");
-    Object *and = StrObject_FromStr("&");
-    Object *eq = StrObject_FromStr("=");
-    Object *empty = StrObject_FromStr("");
     Object *url_args = Object_CallMethod(Object_CallMethod(lst, "Get", _i1), "Split", qst);
     HttpRequestObject_URL(self) = Object_CallMethod(url_args, "Get", _i0);
     Object_INCREF(HttpRequestObject_URL(self));
-    Object *arg_lst = Object_CallMethod(Object_CallMethod(url_args, "Get", _i1), "Split", and);
-    Object *arg_item = Object_NULL;
-    Object *index = Object_NULL;
     HttpRequestObject_ARGUMENTS(self) = KeyValueObject_New();
-    int i = 0;
-    for(; i < ListObject_SIZE(arg_lst); i++) {
-        index = IntObject_FromInt(i);
-        arg_item = Object_CallMethod(Object_CallMethod(arg_lst, "Get", index), "Split", eq);
-        if(ListObject_SIZE(arg_item)==1) {
-            Object_CallMethod(arg_item, "Append", empty);
-            Object_CallMethod(HttpRequestObject_ARGUMENTS(self), "Add", arg_item);
-        } else if(ListObject_SIZE(arg_item)==2) {
-            Object_CallMethod(HttpRequestObject_ARGUMENTS(self), "Add", arg_item);
-        }
-        Object_DECREF(index);
-        Object_DECREF(arg_item);
-    }
-    Object_DECREF(arg_lst);
+    httprequest_build_request_argument(self, Object_CallMethod(url_args, "Get", _i1));
     Object_DECREF(url_args);
     Object_DECREF(qst);
-    Object_DECREF(and);
-    Object_DECREF(eq);
-    Object_DECREF(empty);
     // 获取协议与版本
     Object *line = StrObject_FromStr("/");
     Object *pv_lst = Object_CallMethod(Object_CallMethod(lst, "Get", _i2), "Split", line);
@@ -102,6 +108,14 @@ static Object *httprequest_build_request_header(Object *self, Object *start, Obj
 
 static Object *httprequest_build_request_body(Object *self, Object *start, Object *content) {
     HttpRequestObject_BODY(self) = Object_CallMethod(content, "Substr", start);
+    Object *content_type = StrObject_FromStr("application/x-www-form-urlencoded");
+    Object *key = StrObject_FromStr("Content-Type");
+    Object *value = Object_CallMethod(HttpRequestObject_HEADERS(self), "Get", key);
+    if(Object_Equal(content_type, value)) {
+        httprequest_build_request_argument(self, HttpRequestObject_BODY(self));
+    }
+    Object_DECREF(content_type);
+    Object_DECREF(key);
     return Object_NULL;
 }
 
@@ -122,6 +136,9 @@ static int httprequest_init(Object *self, Object *args) {
     Object_CallMethod(out, "Writeline", HttpRequestObject_VERSION(self));
     Object_CallMethod(out, "Writeline", HttpRequestObject_HEADERS(self));
     Object_CallMethod(out, "Writeline", HttpRequestObject_BODY(self));
+    Object *key = StrObject_FromStr("Content-Type");
+    Object_CallMethod(out, "Writeline", key);
+    Object_DECREF(key);
     Object_DECREF(out);
     return Object_OK;
 }
