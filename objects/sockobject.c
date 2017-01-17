@@ -53,6 +53,9 @@ static Object *sock_method_accept(Object *self, Object *args) {
     struct sockaddr_in client_addr;
     socklen_t length = sizeof(client_addr);
     int conn = accept(sock, (struct sockaddr *)&client_addr, &length);
+    int nZero = 0;
+    setsockopt(conn, SOL_SOCKET, SO_RCVBUF, &nZero, sizeof(nZero));
+    setsockopt(conn, SOL_SOCKET, SO_SNDBUF, &nZero, sizeof(nZero));
     if(conn < 0) {
         fprintf(stderr, "Socket Accept Fail !!!\n");
         exit(1);
@@ -77,11 +80,20 @@ static Object *sock_method_read(Object *self, Object *args) {
     return _s;
 }
 
+static Object *sock_method_write(Object *self, Object *args) {
+    int sock = fileno(IoObject_AsFILE(Object_BASE(self)));
+    Object *_s = Object_Str(args);
+    send(sock, StrObject_AsSTR(_s), StrObject_SIZE(_s), 0);
+    Object_DECREF(_s);
+    return Object_NULL;
+}
+
 static MethodDef sock_methods[] = {
     {"Connect", sock_method_connect},
     {"Listen", sock_method_listen},
     {"Accept", sock_method_accept},
     {"Read", sock_method_read},
+    {"Write", sock_method_write},
     {Object_NULL, Object_NULL}
 };
 

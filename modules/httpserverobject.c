@@ -13,16 +13,20 @@ static Object *httpserver_method_start(Object *self, Object *args) {
     Object *size = IntObject_FromInt(1024);
     Object *status_code = StrObject_FromStr("200");
     Object *status_text = StrObject_FromStr("OK");
+    int count = 0;
     while(TRUE) {
         sock = Object_CallMethod(HttpServerObject_SOCK(self), "Accept", Object_NULL);
         content = Object_CallMethod(sock, "Read", size);
-        request = HttpRequestObject_New(content);
+        if(content && StrObject_SIZE(content)) {
+            request = HttpRequestObject_New(content);
+            response = HttpResponseObject_New(status_code, status_text);
+            Object_CallMethod(sock, "Write", response);
+            Object_DECREF(request);
+            Object_DECREF(response);
+        }
         Object_DECREF(content);
-        response = HttpResponseObject_New(status_code, status_text);
-        Object_CallMethod(sock, "Write", response);
-        Object_DECREF(request);
-        Object_DECREF(response);
         Object_DECREF(sock);
+        count++;
     }
     Object_DECREF(size);
     Object_DECREF(status_code);
