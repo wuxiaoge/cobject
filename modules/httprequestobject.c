@@ -108,6 +108,7 @@ static Object *httprequest_build_request_header(Object *self, Object *start, Obj
 
 static Object *httprequest_build_request_body(Object *self, Object *start, Object *content) {
     HttpRequestObject_BODY(self) = Object_CallMethod(content, "Substr", start);
+    if(!StrObject_SIZE(HttpRequestObject_BODY(self))) return Object_NULL;
     Object *content_type = StrObject_FromStr("application/x-www-form-urlencoded");
     Object *key = StrObject_FromStr("Content-Type");
     Object *value = Object_CallMethod(HttpRequestObject_HEADERS(self), "Get", key);
@@ -136,9 +137,6 @@ static int httprequest_init(Object *self, Object *args) {
     Object_CallMethod(out, "Writeline", HttpRequestObject_VERSION(self));
     Object_CallMethod(out, "Writeline", HttpRequestObject_HEADERS(self));
     Object_CallMethod(out, "Writeline", HttpRequestObject_BODY(self));
-    Object *key = StrObject_FromStr("Content-Type");
-    Object_CallMethod(out, "Writeline", key);
-    Object_DECREF(key);
     Object_DECREF(out);
     return Object_OK;
 }
