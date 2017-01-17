@@ -66,8 +66,9 @@ static Object *threadpool_callback(Object *thread, Object *args) {
     struct _task *task = *(ThreadPoolObject_TASK(pool) + ithread_idx);
     struct _job *job = NULL;
     Object *ret = Object_NULL;
+    int _status = 0;
     do {
-        int _status = pthread_mutex_trylock(&(task->th_lock));
+        _status = pthread_mutex_trylock(&(task->th_lock));
         if(_status) continue;
         job = task->th_start;
         if(job) {
