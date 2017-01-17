@@ -1,7 +1,7 @@
 objects = main.o object.o intobject.o longobject.o floatobject.o doubleobject.o \
 strobject.o listobject.o ioobject.o stdinobject.o stdoutobject.o stderrobject.o \
 fileobject.o sockobject.o threadobject.o threadpoolobject.o keyvalueobject.o httpheaderobject.o \
-httprequestobject.o
+httprequestobject.o httpresponseobject.o httpserverobject.o
 
 main: $(objects)
 	gcc -o main $(objects) -lpthread
@@ -44,6 +44,10 @@ httpheaderobject.o: modules/httpheaderobject.c includes/object.h
 	gcc -c modules/httpheaderobject.c -I includes
 httprequestobject.o: modules/httprequestobject.c includes/object.h
 	gcc -c modules/httprequestobject.c -I includes
+httpresponseobject.o: modules/httpresponseobject.c includes/object.h
+	gcc -c modules/httpresponseobject.c -I includes
+httpserverobject.o: modules/httpserverobject.c includes/object.h
+	gcc -c modules/httpserverobject.c -I includes
 
 .PHONY: clean
 clean:

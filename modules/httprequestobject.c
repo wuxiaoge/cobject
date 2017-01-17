@@ -66,7 +66,9 @@ static Object *httprequest_build_request_method(Object *self, Object *content) {
     HttpRequestObject_URL(self) = Object_CallMethod(url_args, "Get", _i0);
     Object_INCREF(HttpRequestObject_URL(self));
     HttpRequestObject_ARGUMENTS(self) = KeyValueObject_New();
-    httprequest_build_request_argument(self, Object_CallMethod(url_args, "Get", _i1));
+    if(ListObject_SIZE(url_args) == 2) {
+        httprequest_build_request_argument(self, Object_CallMethod(url_args, "Get", _i1));
+    }
     Object_DECREF(url_args);
     Object_DECREF(qst);
     // 获取协议与版本
@@ -112,7 +114,7 @@ static Object *httprequest_build_request_body(Object *self, Object *start, Objec
     Object *content_type = StrObject_FromStr("application/x-www-form-urlencoded");
     Object *key = StrObject_FromStr("Content-Type");
     Object *value = Object_CallMethod(HttpRequestObject_HEADERS(self), "Get", key);
-    if(Object_Equal(content_type, value)) {
+    if(Object_Equal(content_type, value) && StrObject_SIZE(HttpRequestObject_BODY(self))) {
         httprequest_build_request_argument(self, HttpRequestObject_BODY(self));
     }
     Object_DECREF(content_type);
@@ -129,15 +131,6 @@ static int httprequest_init(Object *self, Object *args) {
     httprequest_build_request_body(self, start2, args);
     Object_DECREF(start);
     Object_DECREF(start2);
-    Object *out = StdoutObject_New();
-    Object_CallMethod(out, "Writeline", HttpRequestObject_METHOD(self));
-    Object_CallMethod(out, "Writeline", HttpRequestObject_URL(self));
-    Object_CallMethod(out, "Writeline", HttpRequestObject_ARGUMENTS(self));
-    Object_CallMethod(out, "Writeline", HttpRequestObject_PROTOCOL(self));
-    Object_CallMethod(out, "Writeline", HttpRequestObject_VERSION(self));
-    Object_CallMethod(out, "Writeline", HttpRequestObject_HEADERS(self));
-    Object_CallMethod(out, "Writeline", HttpRequestObject_BODY(self));
-    Object_DECREF(out);
     return Object_OK;
 }
 
