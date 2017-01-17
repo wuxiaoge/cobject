@@ -120,7 +120,7 @@ static Object *httprequest_build_request_body(Object *self, Object *start, Objec
 }
 
 static int httprequest_init(Object *self, Object *args) {
-    assert(StrObject_CHECK(args));
+    assert(StrObject_CHECK(args) && StrObject_SIZE(args));
     Object_Extend(self, &Object_Type, sizeof(Object));
     Object_Init(Object_BASE(self), Object_NULL);
     Object *start = httprequest_build_request_method(self, args);
@@ -176,9 +176,9 @@ TypeObject HttpRequest_Type = {
     .tp_methods = httprequest_methods
 };
 
-Object *HttpRequestObject_New(Object *sock) {
+Object *HttpRequestObject_New(Object *content) {
     Object *_request = Object_Malloc(&HttpRequest_Type, sizeof(HttpRequestObject));
-    Object_Init(_request, sock);
+    Object_Init(_request, content);
     return _request;
 }
 
