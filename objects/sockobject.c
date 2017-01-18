@@ -1,4 +1,5 @@
 #include "object.h"
+#include <fcntl.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -41,7 +42,7 @@ static Object *sock_method_listen(Object *self, Object *args) {
         exit(1);
     }
     int queue_size = IntObject_AsINT(args);
-    if(listen(sock, queue_size ? queue_size : 1000) < 0) {
+    if(listen(sock, queue_size ? queue_size : 1024) < 0) {
         fprintf(stderr, "Socket Listen Fail !!!\n");
         exit(1);
     }
@@ -75,7 +76,10 @@ static Object *sock_method_read(Object *self, Object *args) {
     char *buf = (char *)malloc(size);
     int sock = fileno(IoObject_AsFILE(Object_BASE(self)));
     int rsize = recv(sock, buf, size, 0);
-    Object *_s = StrObject_FromStrAndSize(buf, rsize);
+    Object *_s = Object_NULL;
+    if(rsize > 0) {
+        _s = StrObject_FromStrAndSize(buf, rsize);
+    }
     free(buf);
     return _s;
 }
@@ -88,12 +92,28 @@ static Object *sock_method_write(Object *self, Object *args) {
     return Object_NULL;
 }
 
+static Object *sock_method_setnonblocking(Object *self, Object *args) {
+    int fd = fileno(IoObject_AsFILE(Object_BASE(self)));
+    int opts = fcntl(fd, F_GETFL);
+    if(opts < 0) {
+        fprintf(stderr, "Get FL Fail !!!\n");
+        exit(1);
+    }
+    opts = opts | O_NONBLOCK;
+    if(fcntl(fd, F_SETFL, opts) < 0) {
+        fprintf(stderr, "Set FL Fail !!!\n");
+        exit(1);
+    }
+    return Object_NULL;
+}
+
 static MethodDef sock_methods[] = {
     {"Connect", sock_method_connect},
     {"Listen", sock_method_listen},
     {"Accept", sock_method_accept},
     {"Read", sock_method_read},
     {"Write", sock_method_write},
+    {"SetNonblocking", sock_method_setnonblocking},
     {Object_NULL, Object_NULL}
 };
 

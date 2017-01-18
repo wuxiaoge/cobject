@@ -2,6 +2,7 @@
 #include "httprequestobject.h"
 #include "httpresponseobject.h"
 #include "httpserverobject.h"
+#include "epollobject.h"
 
 static Object *httpserver_method_start(Object *self, Object *args) {
     assert(IntObject_CHECK(args));
@@ -13,20 +14,35 @@ static Object *httpserver_method_start(Object *self, Object *args) {
     Object *size = IntObject_FromInt(1024);
     Object *status_code = StrObject_FromStr("200");
     Object *status_text = StrObject_FromStr("OK");
-    int count = 0;
+    Object *epsize = Object_NULL;
+    Object *epoll = HttpServerObject_EPOLL(self);
+    Object_CallMethod(epoll, "Add", HttpServerObject_SOCK(self));
+    struct epoll_event *event = NULL;
+    int iepsize = 0, i;
     while(TRUE) {
-        sock = Object_CallMethod(HttpServerObject_SOCK(self), "Accept", Object_NULL);
-        content = Object_CallMethod(sock, "Read", size);
-        if(content && StrObject_SIZE(content)) {
-            request = HttpRequestObject_New(content);
-            response = HttpResponseObject_New(status_code, status_text);
-            Object_CallMethod(sock, "Write", response);
-            Object_DECREF(request);
-            Object_DECREF(response);
+        epsize = Object_CallMethod(epoll, "Wait", Object_NULL);
+        iepsize = IntObject_AsINT(epsize);
+        Object_DECREF(epsize);
+        for(i = 0; i < iepsize; i++) {
+            event = (struct epoll_event *)(EpollObject_EVENTS(epoll) + i);
+            if(HttpServerObject_SOCK(self) == event->data.ptr) {
+                sock = Object_CallMethod(HttpServerObject_SOCK(self), "Accept", Object_NULL);
+                Object_CallMethod(epoll, "Add", sock);
+            }else if(event->events & EPOLLIN) {
+                sock = Object_CONVERT(event->data.ptr);
+                event->data.ptr = NULL;
+                content = Object_CallMethod(sock, "Read", size);
+                if(content && StrObject_SIZE(content)) {
+                    request = HttpRequestObject_New(content);
+                    response = HttpResponseObject_New(status_code, status_text);
+                    Object_CallMethod(sock, "Write", response);
+                    Object_DECREF(request);
+                    Object_DECREF(response);
+                }
+                Object_DECREF(content);
+                Object_DECREF(sock);
+            }
         }
-        Object_DECREF(content);
-        Object_DECREF(sock);
-        count++;
     }
     Object_DECREF(size);
     Object_DECREF(status_code);
@@ -53,10 +69,13 @@ static int httpserver_init(Object *self, Object *args) {
     Object *size = IntObject_FromInt(8);
     HttpServerObject_HANDERS(self) = ListObject_New(size);
     Object_DECREF(size);
+    Object_CallMethod(HttpServerObject_SOCK(self), "SetNonblocking", Object_NULL);
+    HttpServerObject_EPOLL(self) = EpollObject_FromSize(1024);
     return Object_OK;
 }
 
 static int httpserver_deinit(Object *self) {
+    Object_DECREF(HttpServerObject_EPOLL(self));
     Object_DECREF(HttpServerObject_SOCK(self));
     Object_DECREF(HttpServerObject_HANDERS(self));
     return Object_Deinit(Object_BASE(self));
