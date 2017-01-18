@@ -1,7 +1,7 @@
 #include "object.h"
 #include "epollobject.h"
 
-static Object *epoll_method_add(Object *self, Object *sock) {
+static Object *epoll_method_in_add(Object *self, Object *sock) {
     assert(SockObject_CHECK(sock));
     int fd = fileno(IoObject_AsFILE(Object_BASE(sock)));
     struct epoll_event ev;
@@ -11,13 +11,20 @@ static Object *epoll_method_add(Object *self, Object *sock) {
     return Object_NULL;
 }
 
-static Object *epoll_method_modify(Object *self, Object *sock) {
+static Object *epoll_method_out_modify(Object *self, Object *sock) {
     assert(SockObject_CHECK(sock));
     int fd = fileno(IoObject_AsFILE(Object_BASE(sock)));
     struct epoll_event ev;
-    ev.events = EPOLLIN;
+    ev.events = EPOLLOUT;
     ev.data.ptr = sock;
     epoll_ctl(EpollObject_FD(self), EPOLL_CTL_MOD, fd, &ev);
+    return Object_NULL;
+}
+
+static Object *epoll_method_delete(Object *self, Object *sock) {
+    assert(SockObject_CHECK(sock));
+    int fd = fileno(IoObject_AsFILE(Object_BASE(sock)));
+    epoll_ctl(EpollObject_FD(self), EPOLL_CTL_DEL, fd, NULL);
     return Object_NULL;
 }
 
@@ -31,8 +38,9 @@ static Object *epoll_method_wait(Object *self, Object *args) {
 }
 
 static MethodDef epoll_methods[] = {
-    {"Add", epoll_method_add},
-    {"Modify", epoll_method_modify},
+    {"InAdd", epoll_method_in_add},
+    {"OutModify", epoll_method_out_modify},
+    {"Delete", epoll_method_delete},
     {"Wait", epoll_method_wait},
     {Object_NULL, Object_NULL}
 };

@@ -16,9 +16,10 @@ static Object *httpserver_method_start(Object *self, Object *args) {
     Object *status_text = StrObject_FromStr("OK");
     Object *epsize = Object_NULL;
     Object *epoll = HttpServerObject_EPOLL(self);
-    Object_CallMethod(epoll, "Add", HttpServerObject_SOCK(self));
+    Object_CallMethod(epoll, "InAdd", HttpServerObject_SOCK(self));
     struct epoll_event *event = NULL;
     int iepsize = 0, i;
+    response = HttpResponseObject_New(status_code, status_text);
     while(TRUE) {
         epsize = Object_CallMethod(epoll, "Wait", Object_NULL);
         iepsize = IntObject_AsINT(epsize);
@@ -27,23 +28,27 @@ static Object *httpserver_method_start(Object *self, Object *args) {
             event = (struct epoll_event *)(EpollObject_EVENTS(epoll) + i);
             if(HttpServerObject_SOCK(self) == event->data.ptr) {
                 sock = Object_CallMethod(HttpServerObject_SOCK(self), "Accept", Object_NULL);
-                Object_CallMethod(epoll, "Add", sock);
+                Object_CallMethod(epoll, "InAdd", sock);
             }else if(event->events & EPOLLIN) {
                 sock = Object_CONVERT(event->data.ptr);
                 event->data.ptr = NULL;
                 content = Object_CallMethod(sock, "Read", size);
                 if(content && StrObject_SIZE(content)) {
                     request = HttpRequestObject_New(content);
-                    response = HttpResponseObject_New(status_code, status_text);
-                    Object_CallMethod(sock, "Write", response);
                     Object_DECREF(request);
-                    Object_DECREF(response);
                 }
                 Object_DECREF(content);
+                Object_CallMethod(epoll, "OutModify", sock);
+            }else if(event->events & EPOLLOUT) {
+                sock = Object_CONVERT(event->data.ptr);
+                event->data.ptr = NULL;
+                Object_CallMethod(sock, "Write", response);
+                Object_CallMethod(epoll, "Delete", sock);
                 Object_DECREF(sock);
             }
         }
     }
+    Object_DECREF(response);
     Object_DECREF(size);
     Object_DECREF(status_code);
     Object_DECREF(status_text);
