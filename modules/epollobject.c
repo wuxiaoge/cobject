@@ -1,4 +1,5 @@
 #include "object.h"
+#include "httpresponseobject.h"
 #include "epollobject.h"
 
 static Object *epoll_method_in_add(Object *self, Object *sock) {
@@ -11,12 +12,13 @@ static Object *epoll_method_in_add(Object *self, Object *sock) {
     return Object_NULL;
 }
 
-static Object *epoll_method_out_modify(Object *self, Object *sock) {
-    assert(SockObject_CHECK(sock));
+static Object *epoll_method_out_modify(Object *self, Object *response) {
+    assert(HttpResponseObject_CHECK(response));
+    Object *sock = HttpResponseObject_SOCK(response);
     int fd = fileno(IoObject_AsFILE(Object_BASE(sock)));
     struct epoll_event ev;
     ev.events = EPOLLOUT;
-    ev.data.ptr = sock;
+    ev.data.ptr = response;
     epoll_ctl(EpollObject_FD(self), EPOLL_CTL_MOD, fd, &ev);
     return Object_NULL;
 }

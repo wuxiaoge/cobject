@@ -29,15 +29,19 @@ static MethodDef httpresponse_methods[] = {
 };
 
 static int httpresponse_init(Object *self, Object *args) {
-    assert(ListObject_CHECK(args) && ListObject_SIZE(args)==2);
+    assert(ListObject_CHECK(args) && ListObject_SIZE(args)==3);
     Object *_i0 = IntObject_FromInt(0);
     Object *_i1 = IntObject_FromInt(1);
+    Object *_i2 = IntObject_FromInt(2);
     HttpResponseObject_STATUS_CODE(self) = Object_CallMethod(args, "Get", _i0);
     Object_INCREF(HttpResponseObject_STATUS_CODE(self));
     HttpResponseObject_STATUS_TEXT(self) = Object_CallMethod(args, "Get", _i1);
     Object_INCREF(HttpResponseObject_STATUS_TEXT(self));
+    HttpResponseObject_SOCK(self) = Object_CallMethod(args, "Get", _i2);
+    Object_INCREF(HttpResponseObject_SOCK(self));
     Object_DECREF(_i0);
     Object_DECREF(_i1);
+    Object_DECREF(_i2);
     HttpResponseObject_PROTOCOL(self) = StrObject_FromStr("HTTP");
     HttpResponseObject_VERSION(self) = StrObject_FromStr("1.1");
     Object *header_text = StrObject_FromStr(
@@ -57,6 +61,7 @@ static int httpresponse_deinit(Object *self) {
     Object_DECREF(HttpResponseObject_STATUS_TEXT(self));
     Object_DECREF(HttpResponseObject_HEADERS(self));
     Object_DECREF(HttpResponseObject_BODY(self));
+    Object_DECREF(HttpResponseObject_SOCK(self));
     return Object_OK;
 }
 
@@ -111,13 +116,14 @@ TypeObject HttpResponse_Type = {
     .tp_methods = httpresponse_methods
 };
 
-Object *HttpResponseObject_New(Object *status_code, Object *status_text) {
+Object *HttpResponseObject_New(Object *status_code, Object *status_text, Object *sock) {
     Object *_response = Object_Malloc(&HttpResponse_Type, sizeof(HttpResponseObject));
-    Object *size = IntObject_FromInt(2);
+    Object *size = IntObject_FromInt(3);
     Object *lst = ListObject_New(size);
     Object_DECREF(size);
     Object_CallMethod(lst, "Append", status_code);
     Object_CallMethod(lst, "Append", status_text);
+    Object_CallMethod(lst, "Append", sock);
     Object_Init(_response, lst);
     Object_DECREF(lst);
     return _response;

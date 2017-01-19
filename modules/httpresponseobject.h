@@ -6,6 +6,7 @@ extern "C" {
 
 typedef struct _httpresponseobject {
     Object_HEAD
+    Object *ob_sock;
     Object *ob_protocol;
     Object *ob_version;
     Object *ob_status_code;
@@ -24,8 +25,9 @@ extern TypeObject HttpResponse_Type;
 #define HttpResponseObject_STATUS_TEXT(self) HttpResponseObject_CONVERT(self)->ob_status_text
 #define HttpResponseObject_HEADERS(self) HttpResponseObject_CONVERT(self)->ob_headers
 #define HttpResponseObject_BODY(self) HttpResponseObject_CONVERT(self)->ob_body
+#define HttpResponseObject_SOCK(self) HttpResponseObject_CONVERT(self)->ob_sock
 
-Object *HttpResponseObject_New(Object *, Object *);
+Object *HttpResponseObject_New(Object *, Object *, Object *);
 
 #ifdef __cplusplus
 }

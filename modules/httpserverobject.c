@@ -39,7 +39,7 @@ static Object *httpserver_method_addhandler(Object *self, Object *handler) {
     return Object_NULL;
 }
 
-static Object *build_response(Object *self, Object *request) {
+static Object *build_response(Object *self, Object *request, Object *sock) {
     Object *status_code = StrObject_FromStr("200");
     Object *status_text = StrObject_FromStr("OK");
     Object *size = IntObject_FromInt(2);
@@ -49,7 +49,7 @@ static Object *build_response(Object *self, Object *request) {
     Object *handler = httpserver_method_gethandler(self,
         HttpRequestObject_URL(request));
     if(handler) {
-        response = HttpResponseObject_New(status_code, status_text);
+        response = HttpResponseObject_New(status_code, status_text, sock);
         params = ListObject_New(size);
         Object_CallMethod(params, "Append", request);
         Object_CallMethod(params, "Append", response);
@@ -60,7 +60,7 @@ static Object *build_response(Object *self, Object *request) {
         Object_DECREF(status_text);
         status_code = StrObject_FromStr("404");
         status_text = StrObject_FromStr("Not Found");
-        response = HttpResponseObject_New(status_code, status_text);
+        response = HttpResponseObject_New(status_code, status_text, sock);
         Object_DECREF(HttpResponseObject_BODY(response));
         body = StrObject_FromStr("404 Not Found");
     }
@@ -129,18 +129,25 @@ static Object *httpserver_method_start(Object *self, Object *args) {
                 if(content && StrObject_SIZE(content)) {
                     gettimeofday(&start, NULL);
                     request = HttpRequestObject_New(content);
-                    response = build_response(self, request);
-                    Object_CallMethod(sock, "Write", response);
+                    response = build_response(self, request, sock);
                     httpserver_request_log(request, response, SockObject_IP(sock), start);
+                    Object_CallMethod(epoll, "OutModify", response);
                     Object_DECREF(request);
-                    Object_DECREF(response);
                 }
                 Object_DECREF(content);
-                Object_CallMethod(epoll, "Delete", sock);
                 Object_DECREF(sock);
+            }else if(event->events & EPOLLOUT) {
+                response = Object_CONVERT(event->data.ptr);
+                event->data.ptr = NULL;
+                sock = HttpResponseObject_SOCK(response);
+                Object_CallMethod(sock, "Write", response);
+                Object_CallMethod(epoll, "Delete", sock);
+                Object_DECREF(response);
+//goto l;
             }
         }
     }
+//l:
     Object_DECREF(size);
     return Object_NULL;
 }
