@@ -2,7 +2,29 @@
 #include "httpheaderobject.h"
 #include "httpresponseobject.h"
 
+static Object *httpresponse_method_setbody(Object *self, Object *body) {
+    assert(StrObject_CHECK(body) && StrObject_SIZE(body));
+    Object *size = IntObject_FromInt(StrObject_SIZE(body));
+    Object *length = Object_Str(size);
+    Object_DECREF(size);
+    Object_DECREF(HttpResponseObject_BODY(self));
+    HttpResponseObject_BODY(self) = body;
+    Object_INCREF(HttpResponseObject_BODY(self));
+    Object *arg_size = IntObject_FromInt(2);
+    Object *args = ListObject_New(arg_size);
+    Object_DECREF(arg_size);
+    Object *key = StrObject_FromStr("Content-Length");
+    Object_CallMethod(args, "Append", key);
+    Object_DECREF(key);
+    Object_CallMethod(args, "Append", length);
+    Object_DECREF(length);
+    Object_CallMethod(HttpResponseObject_HEADERS(self), "Add", args);
+    Object_DECREF(args);
+    return Object_NULL;
+}
+
 static MethodDef httpresponse_methods[] = {
+    {"SetBody", httpresponse_method_setbody},
     {Object_NULL, Object_NULL}
 };
 
@@ -21,11 +43,10 @@ static int httpresponse_init(Object *self, Object *args) {
     Object *header_text = StrObject_FromStr(
         "Server: LQS/1.0\r\n"
         "Connection: keep-alive\r\n"
-        "Content-Length: 11\r\n"
     );
     HttpResponseObject_HEADERS(self) = HttpHeaderObject_New(header_text);
     Object_DECREF(header_text);
-    HttpResponseObject_BODY(self) = StrObject_FromStr("Success !!!");
+    HttpResponseObject_BODY(self) = Object_NULL;
     return Object_OK;
 }
 

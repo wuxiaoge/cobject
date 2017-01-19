@@ -169,16 +169,15 @@ methodfunc Object_GetMethod(Object *self, Object *name, Object **owner) {
 
 Object *Object_CallMethod(Object *self, const char *name, Object *args) {
     Object *ret = Object_NULL;
-    Object **_owner = (Object **)malloc(sizeof(Object *));
+    Object *_owner = Object_NULL;
     Object *_s = StrObject_FromStr(name);
-    methodfunc mf = Object_GetMethod(self, _s, _owner);
+    methodfunc mf = Object_GetMethod(self, _s, &_owner);
     Object_DECREF(_s);
     if(mf) {
-        ret = mf(*_owner, args);
+        ret = mf(_owner, args);
     } else {
         fprintf(stderr, "Error : not find function \"%s\" !!!\n", name);
     }
-    free(_owner);
     return ret;
 }
 

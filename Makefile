@@ -2,7 +2,7 @@ objects = main.o object.o intobject.o longobject.o floatobject.o doubleobject.o 
 strobject.o listobject.o ioobject.o stdinobject.o stdoutobject.o stderrobject.o \
 fileobject.o sockobject.o threadobject.o \
 threadpoolobject.o keyvalueobject.o httpheaderobject.o httprequestobject.o \
-httpresponseobject.o httpserverobject.o epollobject.o
+httpresponseobject.o httpserverobject.o epollobject.o httphandlerobject.o
 
 main: $(objects)
 	gcc -o main $(objects) -lpthread
@@ -52,6 +52,8 @@ httpserverobject.o: modules/httpserverobject.c includes/object.h
 	gcc -c modules/httpserverobject.c -I includes
 epollobject.o: modules/epollobject.c includes/object.h
 	gcc -c modules/epollobject.c -I includes
+httphandlerobject.o: modules/httphandlerobject.c includes/object.h
+	gcc -c modules/httphandlerobject.c -I includes
 
 .PHONY: clean
 clean:

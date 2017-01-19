@@ -4,11 +4,17 @@
 extern "C" {
 #endif
 
+struct url_handler {
+    struct url_handler *next;
+    Object *url;
+    Object *handler;
+};
+
 typedef struct _httpserverobject {
     Object_HEAD
     Object *ob_epoll;
     Object *ob_sock;
-    Object *ob_handers;
+    struct url_handler *ob_handers;
 } HttpServerObject;
 
 extern TypeObject HttpServer_Type;
