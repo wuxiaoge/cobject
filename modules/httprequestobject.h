@@ -6,6 +6,7 @@ extern "C" {
 
 typedef struct _httprequestobject {
     Object_HEAD
+    Object *ob_querystr;
     Object *ob_method;
     Object *ob_url;
     Object *ob_protocol;
@@ -26,6 +27,7 @@ extern TypeObject HttpRequest_Type;
 #define HttpRequestObject_HEADERS(ob) HttpRequestObject_CONVERT(ob)->ob_headers
 #define HttpRequestObject_ARGUMENTS(ob) HttpRequestObject_CONVERT(ob)->ob_arguments
 #define HttpRequestObject_BODY(ob) HttpRequestObject_CONVERT(ob)->ob_body
+#define HttpRequestObject_QUERYSTR(ob) HttpRequestObject_CONVERT(ob)->ob_querystr
 
 Object *HttpRequestObject_New(Object *);
 

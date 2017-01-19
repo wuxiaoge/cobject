@@ -66,8 +66,11 @@ static Object *httprequest_build_request_method(Object *self, Object *content) {
     HttpRequestObject_URL(self) = Object_CallMethod(url_args, "Get", _i0);
     Object_INCREF(HttpRequestObject_URL(self));
     HttpRequestObject_ARGUMENTS(self) = KeyValueObject_New();
+    HttpRequestObject_QUERYSTR(self) = Object_NULL;
     if(ListObject_SIZE(url_args) == 2) {
-        httprequest_build_request_argument(self, Object_CallMethod(url_args, "Get", _i1));
+        HttpRequestObject_QUERYSTR(self) = Object_CallMethod(url_args, "Get", _i1);
+        Object_INCREF(HttpRequestObject_QUERYSTR(self));
+        httprequest_build_request_argument(self, HttpRequestObject_QUERYSTR(self));
     }
     Object_DECREF(url_args);
     Object_DECREF(qst);
@@ -142,6 +145,7 @@ static int httprequest_deinit(Object *self) {
     Object_DECREF(HttpRequestObject_HEADERS(self));
     Object_DECREF(HttpRequestObject_ARGUMENTS(self));
     Object_DECREF(HttpRequestObject_BODY(self));
+    Object_DECREF(HttpRequestObject_QUERYSTR(self));
     return Object_Deinit(Object_BASE(self));
 }
 

@@ -55,7 +55,6 @@ static Object *build_response(Object *self, Object *request) {
         Object_CallMethod(params, "Append", response);
         body = Object_CallMethod(handler, "Run", params);
         Object_DECREF(params);
-        Object_CallMethod(response, "SetBody", body);
     } else {
         Object_DECREF(status_code);
         Object_DECREF(status_text);
@@ -64,13 +63,31 @@ static Object *build_response(Object *self, Object *request) {
         response = HttpResponseObject_New(status_code, status_text);
         Object_DECREF(HttpResponseObject_BODY(response));
         body = StrObject_FromStr("404 Not Found");
-        Object_CallMethod(response, "SetBody", body);
     }
+    Object_CallMethod(response, "SetBody", body);
     Object_DECREF(body);
     Object_DECREF(size);
     Object_DECREF(status_code);
     Object_DECREF(status_text);
     return response;
+}
+
+static void httpserver_request_log(Object *request, Object *response, Object *ip, struct timeval start) {
+    struct timeval now_tv;
+    gettimeofday(&now_tv, NULL);
+    long request_ts = ((long)now_tv.tv_sec * 1000 + (long)now_tv.tv_usec / 1000) - ((long)start.tv_sec * 1000 + (long)start.tv_usec / 1000);
+    char *s = ctime(&start.tv_sec);
+    Object *ob_now = StrObject_FromStrAndSize(s, strlen(s) - 1);
+    const char *now = StrObject_AsSTR(ob_now);
+    const char *url = StrObject_AsSTR(HttpRequestObject_URL(request));
+    const char *method = StrObject_AsSTR(HttpRequestObject_METHOD(request));
+    const char *scode = StrObject_AsSTR(HttpResponseObject_STATUS_CODE(response));
+    ssize_t byte = StrObject_SIZE(HttpResponseObject_BODY(response));
+    Object *query = HttpRequestObject_QUERYSTR(request);
+    printf("%s [%s] %s %s%s%s generated %ld bytes in %ld msecs (HTTP/1.1 %s) \n",
+        StrObject_AsSTR(ip), now, method, url, (query ? "?" : ""),
+        (query ? StrObject_AsSTR(query) : ""), byte, request_ts, scode);
+    Object_DECREF(ob_now);
 }
 
 static Object *httpserver_method_start(Object *self, Object *args) {
@@ -85,7 +102,10 @@ static Object *httpserver_method_start(Object *self, Object *args) {
     Object *epoll = HttpServerObject_EPOLL(self);
     Object_CallMethod(epoll, "InAdd", HttpServerObject_SOCK(self));
     struct epoll_event *event = NULL;
+    struct timeval start;
     int iepsize = 0, i;
+    Object *read_content = Object_NULL;
+    Object *tmp = Object_NULL;
     while(TRUE) {
         epsize = Object_CallMethod(epoll, "Wait", Object_NULL);
         iepsize = IntObject_AsINT(epsize);
@@ -98,20 +118,29 @@ static Object *httpserver_method_start(Object *self, Object *args) {
             }else if(event->events & EPOLLIN) {
                 sock = Object_CONVERT(event->data.ptr);
                 event->data.ptr = NULL;
-                content = Object_CallMethod(sock, "Read", size);
+                content = StrObject_FromStr("");
+                do {
+                    read_content = Object_CallMethod(sock, "Read", size);
+                    tmp = Object_CallMethod(content, "Concat", read_content);
+                    Object_DECREF(content);
+                    Object_DECREF(read_content);
+                    content = tmp;
+                } while(content && StrObject_SIZE(content) == IntObject_AsINT(size));
                 if(content && StrObject_SIZE(content)) {
+                    gettimeofday(&start, NULL);
                     request = HttpRequestObject_New(content);
                     response = build_response(self, request);
+                    Object_CallMethod(sock, "Write", response);
+                    httpserver_request_log(request, response, SockObject_IP(sock), start);
                     Object_DECREF(request);
+                    Object_DECREF(response);
                 }
                 Object_DECREF(content);
                 Object_CallMethod(epoll, "Delete", sock);
-                Object_CallMethod(sock, "Write", response);
                 Object_DECREF(sock);
             }
         }
     }
-    Object_DECREF(response);
     Object_DECREF(size);
     return Object_NULL;
 }
