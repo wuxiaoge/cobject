@@ -179,6 +179,32 @@ static Object *list_method_clear(Object *self, Object *args) {
     return Object_NULL;
 }
 
+static Object *list_method_join(Object *self, Object *args) {
+    assert(StrObject_CHECK(args));
+    Object *index = Object_NULL;
+    Object *item = Object_NULL;
+    Object *item_str = Object_NULL;
+    Object *result = StrObject_FromStr("");
+    Object *tmp = Object_NULL;
+    int i = 0;
+    for(; i < ListObject_SIZE(self); i++) {
+        index = IntObject_FromInt(i);
+        item = list_method_get(self, index);
+        Object_DECREF(index);
+        item_str = Object_Str(item);
+        tmp = Object_CallMethod(result, "Concat", item_str);
+        Object_DECREF(item_str);
+        Object_DECREF(result);
+        if(i == (ListObject_SIZE(self) - 1)) {
+            result = tmp;
+        } else {
+            result = Object_CallMethod(tmp, "Concat", args);
+            Object_DECREF(tmp);
+        }
+    }
+    return result;
+}
+
 static MethodDef list_methods[] = {
     {"Append", list_method_append},
     {"Remove", list_method_remove},
@@ -188,6 +214,7 @@ static MethodDef list_methods[] = {
     {"Map", list_method_map},
     {"Filter", list_method_filter},
     {"Clear", list_method_clear},
+    {"Join", list_method_join},
     {Object_NULL, Object_NULL}
 };
 
