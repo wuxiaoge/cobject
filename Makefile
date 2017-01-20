@@ -8,55 +8,55 @@ notfound.o
 main: $(objects)
 	gcc -o main $(objects) -lpthread
 
-main.o: main.c includes/object.h
+main.o: main.c
 	gcc -c main.c -I includes
-object.o: objects/object.c includes/object.h
+object.o: objects/object.c
 	gcc -c objects/object.c -I includes
-intobject.o: objects/intobject.c includes/object.h
+intobject.o: objects/intobject.c
 	gcc -c objects/intobject.c -I includes
-longobject.o: objects/longobject.c includes/object.h
+longobject.o: objects/longobject.c
 	gcc -c objects/longobject.c -I includes
-floatobject.o: objects/floatobject.c includes/object.h
+floatobject.o: objects/floatobject.c
 	gcc -c objects/floatobject.c -I includes
-doubleobject.o: objects/doubleobject.c includes/object.h
+doubleobject.o: objects/doubleobject.c
 	gcc -c objects/doubleobject.c -I includes
-strobject.o: objects/strobject.c includes/object.h
+strobject.o: objects/strobject.c
 	gcc -c objects/strobject.c -I includes
-listobject.o: objects/listobject.c includes/object.h
+listobject.o: objects/listobject.c
 	gcc -c objects/listobject.c -I includes
-ioobject.o: objects/ioobject.c includes/object.h
+ioobject.o: objects/ioobject.c
 	gcc -c objects/ioobject.c -I includes
-stdinobject.o: objects/stdinobject.c includes/object.h
+stdinobject.o: objects/stdinobject.c
 	gcc -c objects/stdinobject.c -I includes
-stdoutobject.o: objects/stdoutobject.c includes/object.h
+stdoutobject.o: objects/stdoutobject.c
 	gcc -c objects/stdoutobject.c -I includes
-stderrobject.o: objects/stderrobject.c includes/object.h
+stderrobject.o: objects/stderrobject.c
 	gcc -c objects/stderrobject.c -I includes
-fileobject.o: objects/fileobject.c includes/object.h
+fileobject.o: objects/fileobject.c
 	gcc -c objects/fileobject.c -I includes
-sockobject.o: objects/sockobject.c includes/object.h
+sockobject.o: objects/sockobject.c
 	gcc -c objects/sockobject.c -I includes
-threadobject.o: objects/threadobject.c includes/object.h
+threadobject.o: objects/threadobject.c
 	gcc -c objects/threadobject.c -I includes
 
-threadpoolobject.o: modules/threadpoolobject.c includes/object.h
+threadpoolobject.o: modules/threadpoolobject.c
 	gcc -c modules/threadpoolobject.c -I includes
-keyvalueobject.o: modules/keyvalueobject.c includes/object.h
+keyvalueobject.o: modules/keyvalueobject.c
 	gcc -c modules/keyvalueobject.c -I includes
-httpheaderobject.o: modules/httpheaderobject.c includes/object.h
+httpheaderobject.o: modules/httpheaderobject.c
 	gcc -c modules/httpheaderobject.c -I includes
-httprequestobject.o: modules/httprequestobject.c includes/object.h
+httprequestobject.o: modules/httprequestobject.c
 	gcc -c modules/httprequestobject.c -I includes
-httpresponseobject.o: modules/httpresponseobject.c includes/object.h
+httpresponseobject.o: modules/httpresponseobject.c
 	gcc -c modules/httpresponseobject.c -I includes
-httpserverobject.o: modules/httpserverobject.c includes/object.h
+httpserverobject.o: modules/httpserverobject.c
 	gcc -c modules/httpserverobject.c -I includes -I handlers
-epollobject.o: modules/epollobject.c includes/object.h
+epollobject.o: modules/epollobject.c
 	gcc -c modules/epollobject.c -I includes
-httphandlerobject.o: modules/httphandlerobject.c includes/object.h
+httphandlerobject.o: modules/httphandlerobject.c
 	gcc -c modules/httphandlerobject.c -I includes
 
-notfound.o: handlers/notfound.c includes/object.h
+notfound.o: handlers/notfound.c
 	gcc -c handlers/notfound.c -I includes -I modules
 
 .PHONY: clean
