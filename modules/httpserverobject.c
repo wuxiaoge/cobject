@@ -3,6 +3,7 @@
 #include "httpresponseobject.h"
 #include "httpserverobject.h"
 #include "epollobject.h"
+#include "notfound.h"
 
 static Object *httpserver_method_gethandler(Object *self, Object *url) {
     assert(StrObject_CHECK(url) && StrObject_SIZE(url) > 0);
@@ -42,27 +43,30 @@ static Object *httpserver_method_addhandler(Object *self, Object *handler) {
 static Object *build_response(Object *self, Object *request, Object *sock) {
     Object *status_code = StrObject_FromStr("200");
     Object *status_text = StrObject_FromStr("OK");
-    Object *size = IntObject_FromInt(2);
+    Object *size = IntObject_FromInt(3);
     Object *body = Object_NULL;
     Object *response = Object_NULL;
     Object *params = Object_NULL;
     Object *handler = httpserver_method_gethandler(self,
         HttpRequestObject_URL(request));
-    if(handler) {
-        response = HttpResponseObject_New(status_code, status_text, sock);
-        params = ListObject_New(size);
-        Object_CallMethod(params, "Append", request);
-        Object_CallMethod(params, "Append", response);
-        body = Object_CallMethod(handler, "Run", params);
-        Object_DECREF(params);
-    } else {
+    BOOL reset_handler = FALSE;
+    if(!handler) {
         Object_DECREF(status_code);
         Object_DECREF(status_text);
         status_code = StrObject_FromStr("404");
         status_text = StrObject_FromStr("Not Found");
-        response = HttpResponseObject_New(status_code, status_text, sock);
-        Object_DECREF(HttpResponseObject_BODY(response));
-        body = StrObject_FromStr("404 Not Found");
+        handler = NotFoundHandler_New();
+        reset_handler = TRUE;
+    }
+    response = HttpResponseObject_New(status_code, status_text, sock);
+    params = ListObject_New(size);
+    Object_CallMethod(params, "Append", handler);
+    Object_CallMethod(params, "Append", request);
+    Object_CallMethod(params, "Append", response);
+    body = Object_CallMethod(handler, "Run", params);
+    Object_DECREF(params);
+    if(reset_handler) {
+        Object_DECREF(handler);
     }
     Object_CallMethod(response, "SetBody", body);
     Object_DECREF(body);
@@ -144,6 +148,8 @@ static Object *httpserver_method_start(Object *self, Object *args) {
                     httpserver_request_log(request, response, SockObject_IP(sock), start);
                     Object_CallMethod(epoll, "OutModify", response);
                     Object_DECREF(request);
+                } else {
+                    Object_CallMethod(epoll, "Delete", sock);
                 }
                 Object_DECREF(content);
                 Object_DECREF(sock);

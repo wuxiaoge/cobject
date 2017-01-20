@@ -4,18 +4,21 @@
 #include "httphandlerobject.h"
 
 static Object *httphandler_method_run(Object *self, Object *args) {
-    assert(ListObject_CHECK(args) && ListObject_SIZE(args)==2);
+    assert(ListObject_CHECK(args) && ListObject_SIZE(args)==3);
     Object *_i0 = IntObject_FromInt(0);
-    Object *request = Object_CallMethod(args, "Get", _i0);
+    Object *handler = Object_CallMethod(args, "Get", _i0);
     Object_DECREF(_i0);
     Object *_i1 = IntObject_FromInt(1);
-    Object *response = Object_CallMethod(args, "Get", _i1);
+    Object *request = Object_CallMethod(args, "Get", _i1);
     Object_DECREF(_i1);
+    Object *_i2 = IntObject_FromInt(2);
+    Object *response = Object_CallMethod(args, "Get", _i2);
+    Object_DECREF(_i2);
     Object *_owner = Object_NULL;
-    methodfunc http_callback = Object_GetMethod(self, HttpRequestObject_METHOD(request), &_owner);
+    methodfunc http_callback = Object_GetMethod(handler, HttpRequestObject_METHOD(request), &_owner);
     Object *result = Object_NULL;
     if(http_callback) {
-        result = http_callback(_owner, args);
+        result = http_callback(handler, args);
     } else {
         Object_DECREF(HttpResponseObject_STATUS_CODE(response));
         Object_DECREF(HttpResponseObject_STATUS_TEXT(response));
