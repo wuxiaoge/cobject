@@ -15,6 +15,16 @@ extern TypeObject HttpHandler_Type;
 
 Object *HttpHandlerObject_New();
 
+#define METHOD_NOT_ALLOWED_405_CONTENT "<!DOCTYPE html>" \
+"<html>" \
+    "<head>" \
+        "<title>405 Method Not Allowed</title>" \
+    "</head>" \
+    "<body>" \
+        "<h1>405 Method Not Allowed</h1>" \
+    "</body>" \
+"</html>"
+
 #ifdef __cplusplus
 }
 #endif

@@ -24,7 +24,7 @@ static Object *httphandler_method_run(Object *self, Object *args) {
         Object_DECREF(HttpResponseObject_STATUS_TEXT(response));
         HttpResponseObject_STATUS_CODE(response) = StrObject_FromStr("405");
         HttpResponseObject_STATUS_TEXT(response) = StrObject_FromStr("Method Not Allowed");
-        result = StrObject_FromStr("405 Method Not Allowed");
+        result = StrObject_FromStr(METHOD_NOT_ALLOWED_405_CONTENT);
     }
     return result;
 }

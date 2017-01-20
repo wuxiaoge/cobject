@@ -5,7 +5,7 @@
 #include "notfound.h"
 
 static Object *notfound_method_call(Object *self, Object *args) {
-    return StrObject_FromStr("404 Not Found");
+    return StrObject_FromStr(NOT_FOUND_404_CONTENT);
 }
 
 static MethodDef notfound_methods[] = {
