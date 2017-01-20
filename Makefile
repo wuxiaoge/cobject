@@ -57,5 +57,5 @@ httphandlerobject.o: modules/httphandlerobject.c includes/object.h
 
 .PHONY: clean
 clean:
-	rm main $(objects)
+	rm -f main $(objects)
 
