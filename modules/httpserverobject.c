@@ -106,6 +106,7 @@ static Object *httpserver_method_start(Object *self, Object *args) {
     int iepsize = 0, i;
     Object *read_content = Object_NULL;
     Object *tmp = Object_NULL;
+    BOOL is_read = TRUE;
     while(TRUE) {
         epsize = Object_CallMethod(epoll, "Wait", Object_NULL);
         iepsize = IntObject_AsINT(epsize);
@@ -119,13 +120,23 @@ static Object *httpserver_method_start(Object *self, Object *args) {
                 sock = Object_CONVERT(event->data.ptr);
                 event->data.ptr = NULL;
                 content = StrObject_FromStr("");
+                is_read = TRUE;
                 do {
                     read_content = Object_CallMethod(sock, "Read", size);
-                    tmp = Object_CallMethod(content, "Concat", read_content);
-                    Object_DECREF(content);
+                    if(read_content && StrObject_SIZE(read_content) == IntObject_AsINT(size)) {
+                        tmp = content;
+                        content = Object_CallMethod(tmp, "Concat", read_content);
+                    } else if(read_content && StrObject_SIZE(read_content)) {
+                        tmp = content;
+                        content = Object_CallMethod(tmp, "Concat", read_content);
+                        is_read = FALSE;
+                    } else {
+                        tmp = Object_NULL;
+                        is_read = FALSE;
+                    }
+                    Object_DECREF(tmp);
                     Object_DECREF(read_content);
-                    content = tmp;
-                } while(content && StrObject_SIZE(content) == IntObject_AsINT(size));
+                } while(is_read);
                 if(content && StrObject_SIZE(content)) {
                     gettimeofday(&start, NULL);
                     request = HttpRequestObject_New(content);
