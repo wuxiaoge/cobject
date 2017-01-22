@@ -29,7 +29,7 @@ int main(int argc, char *args[]) {
     Object_DECREF(server);
     Object_DECREF(url_handler);*/
     Object *sql = StrObject_FromStr("SELECT * FROM users");
-    Object *sql2 = StrObject_FromStr("INSERT INTO users(name) VALUES('well')");
+    Object *sql2 = StrObject_FromStr("INSERT INTO users(name) VALUES('nice')");
     Object *dbname = StrObject_FromStr("/home/lq/testdb.db");
     Object *sqlite = Sqlite3Object_Open(dbname);
 //    Object_CallMethod(sqlite, "Begin", Object_NULL);

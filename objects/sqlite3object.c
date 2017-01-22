@@ -40,19 +40,19 @@ static Object *sqlite3_method_query(Object *self, Object *args) {
 }
 
 static Object *sqlite3_method_begin(Object *self, Object *args) {
-    Object *begin = StrObject_FromStr("BEGIN");
+    Object *begin = StrObject_FromStr("BEGIN;");
     sqlite3_method_exec(self, begin);
     Object_DECREF(begin);
 }
 
 static Object *sqlite3_method_commit(Object *self, Object *args) {
-    Object *commit = StrObject_FromStr("COMMIT");
+    Object *commit = StrObject_FromStr("COMMIT;");
     sqlite3_method_exec(self, commit);
     Object_DECREF(commit);
 }
 
 static Object *sqlite3_method_rollback(Object *self, Object *args) {
-    Object *rollback = StrObject_FromStr("ROLLBACK");
+    Object *rollback = StrObject_FromStr("ROLLBACK;");
     sqlite3_method_exec(self, rollback);
     Object_DECREF(rollback);
 }
