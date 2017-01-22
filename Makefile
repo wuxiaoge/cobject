@@ -1,12 +1,12 @@
 objects = main.o object.o intobject.o longobject.o floatobject.o doubleobject.o \
 strobject.o listobject.o ioobject.o stdinobject.o stdoutobject.o stderrobject.o \
-fileobject.o sockobject.o threadobject.o \
+fileobject.o sockobject.o threadobject.o sqlite3object.o\
 threadpoolobject.o keyvalueobject.o httpheaderobject.o httprequestobject.o \
 httpresponseobject.o httpserverobject.o epollobject.o httphandlerobject.o \
 notfound.o
 
 main: $(objects)
-	gcc -o main $(objects) -lpthread
+	gcc -o main $(objects) -lpthread -lsqlite3
 
 main.o: main.c
 	gcc -c main.c -I includes
@@ -38,6 +38,8 @@ sockobject.o: objects/sockobject.c
 	gcc -c objects/sockobject.c -I includes
 threadobject.o: objects/threadobject.c
 	gcc -c objects/threadobject.c -I includes
+sqlite3object.o: objects/sqlite3object.c
+	gcc -c objects/sqlite3object.c -I includes
 
 threadpoolobject.o: modules/threadpoolobject.c
 	gcc -c modules/threadpoolobject.c -I includes
