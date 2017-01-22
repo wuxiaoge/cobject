@@ -6,7 +6,7 @@
 #include "modules/httphandlerobject.h"
 
 int main(int argc, char *args[]) {
-    /*Object *size = IntObject_FromInt(2);
+    Object *size = IntObject_FromInt(2);
     Object *url_handler = Object_NULL;
     Object *url = Object_NULL;
     Object *handler = Object_NULL;
@@ -27,23 +27,7 @@ int main(int argc, char *args[]) {
     Object_DECREF(ip);
     Object_DECREF(port);
     Object_DECREF(server);
-    Object_DECREF(url_handler);*/
-    Object *sql = StrObject_FromStr("SELECT * FROM users");
-    Object *sql2 = StrObject_FromStr("INSERT INTO users(name) VALUES('nice')");
-    Object *dbname = StrObject_FromStr("/home/lq/testdb.db");
-    Object *sqlite = Sqlite3Object_Open(dbname);
-//    Object_CallMethod(sqlite, "Begin", Object_NULL);
-//    Object_CallMethod(sqlite, "Exec", sql2);
-//    Object_CallMethod(sqlite, "Commit", Object_NULL);
-    Object *res = Object_CallMethod(sqlite, "Query", sql);
-    Object *out = StdoutObject_New();
-    Object_CallMethod(out, "Writeline", res);
-    Object_DECREF(out);
-    Object_DECREF(res);
-    Object_DECREF(sqlite);
-    Object_DECREF(dbname);
-    Object_DECREF(sql2);
-    Object_DECREF(sql);
+    Object_DECREF(url_handler);
     return 0;
 }
 
